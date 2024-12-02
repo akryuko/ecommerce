@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart</title>
-</head>
-<body>
-    <h1>Your Cart</h1>
+    <h2>Shopping Cart</h2>
     <ul>
-        {% for item in cart.items.all %}
+        {% for item in cart_items %}
             <li>
-                {{ item.product.name }} - ${{ item.product.price }} x {{ item.quantity }}
-                <a href="{% url 'remove_from_cart' item.id %}">Remove</a>
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px;">
+                {{ item.product.name }} - {{ item.quantity }} x ${{ item.product.price }} = ${{ item.total_price }}
             </li>
         {% endfor %}
     </ul>
-    <h3>Total: ${{ total }}</h3>  <!-- Display total -->
-    <a href="{% url 'product_list' %}">Continue Shopping</a>
-</body>
+    <p>Total: ${{ total_price }}</p>
+    
 </html>
+
+
+

@@ -38,7 +38,7 @@
                     <h3>{{ product.name }}</h3>
                     <p>${{ product.price }}</p>
                     <div class="product-buttons">
-                        <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-btn">Add to Cart</a>
+                        <a href="#" class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</a>
                         <a href="{% url 'product_detail' product.id %}" class="view-btn">View</a>
                     </div>
                 </div>
@@ -49,32 +49,11 @@
     <footer class="footer">
         <p>&copy; 2024 My Ecommerce Store</p>
     </footer>
+    
+    <script src="{% static 'js/cart.js' %}"></script>
+
 </body>
 </html>
-
-<script>
-    // AJAX request for Add to Cart button
-    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();  // Prevent default form submission behavior
-
-            let productId = this.getAttribute('data-product-id');
-
-            fetch(`/add_to_cart/${productId}/`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Update the cart count in the header
-                document.getElementById('cart-count').textContent = data.cart_count;
-            })
-            .catch(error => console.error('Error adding to cart:', error));
-        });
-    });
-</script>
 
 
 

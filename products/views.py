@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from decimal import Decimal
 from django.http import JsonResponse
+from .forms import RegistrationForm
 
 
 def home(request):
@@ -36,26 +37,43 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     return render(request, 'products/product_detail.html', {'product': product})
 
-
-# View cart
-@login_required
 def view_cart(request):
-    # Retrieve the current user's cart
-    cart = Cart.objects.filter(user=request.user).first()
-    return render(request, 'products/cart.html', {'cart': cart})
+    cart = request.session.get('cart', {})
+    cart_items = []
+    total_price = 0
+
+    for product_id, quantity in cart.items():
+        try:
+            product = Product.objects.get(id=int(product_id))
+            cart_items.append({
+                'product': product,
+                'quantity': quantity,
+                'total_price': product.price * quantity
+            })
+            total_price += product.price * quantity
+        except Product.DoesNotExist:
+            continue
+
+    return render(request, 'products/cart.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
-# Add to cart
+
 @login_required
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    
-    # Use session to store cart (this is just a basic example)
     cart = request.session.get('cart', {})
-    cart[product_id] = cart.get(product_id, 0) + 1  # Increment the item count in the cart
-    request.session['cart'] = cart
+    cart = {key: int(value) if isinstance(value, int) else 0 for key, value in cart.items()}  # Ensure valid data
 
-    # Get the cart count
+    product_id_str = str(product_id)
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)
+
+    cart[product_id_str] = cart.get(product_id_str, 0) + 1
+    request.session['cart'] = cart  # Persist cart in session
+    request.session.modified = True  # Ensure session data is saved
+
     cart_count = sum(cart.values())
 
     return JsonResponse({'cart_count': cart_count})
@@ -69,21 +87,6 @@ def remove_from_cart(request, item_id):
     cart_item.delete()
     return redirect('view_cart')
 
-
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
-
-
-# products/views.py
-from django.shortcuts import render, redirect
-from .forms import RegistrationForm
 
 def register(request):
     if request.method == "POST":
