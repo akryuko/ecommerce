@@ -57,7 +57,6 @@ def view_cart(request):
     return render(request, 'products/cart.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
-
 @login_required
 def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
@@ -80,13 +79,27 @@ def add_to_cart(request, product_id):
 
 
 
-# Remove from cart
-@login_required
-def remove_from_cart(request, item_id):
-    cart_item = CartItem.objects.get(id=item_id)
-    cart_item.delete()
-    return redirect('view_cart')
+def reduce_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        cart[str(product_id)] -= 1
+        if cart[str(product_id)] <= 0:
+            del cart[str(product_id)]
+        request.session['cart'] = cart
+    return redirect('cart')
 
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    
+    # Convert product_id to string to match how items are stored in the cart
+    product_id_str = str(product_id)
+    
+    # Remove the item from the cart if it exists
+    if product_id_str in cart:
+        del cart[product_id_str]
+        request.session['cart'] = cart
+    
+    return redirect('cart')
 
 def register(request):
     if request.method == "POST":
@@ -99,3 +112,49 @@ def register(request):
     else:
         form = RegistrationForm()
     return render(request, 'products/register.html', {'form': form})
+
+
+def update_cart(request, product_id):
+    """Update item quantity or remove item from the cart."""
+    cart = request.session.get('cart', {})
+    product_id_str = str(product_id)
+    
+    # Check for actions from POST request
+    action = request.POST.get('action')
+    if product_id_str in cart:
+        if action == 'decrease':
+            if cart[product_id_str] > 1:
+                cart[product_id_str] -= 1
+            else:
+                del cart[product_id_str]  # Remove item if quantity is 0
+        elif action == 'remove':
+            del cart[product_id_str]  # Remove item completely
+
+    # Save updated cart in session
+    request.session['cart'] = cart
+    return redirect('cart')  # Redirect back to the Cart page
+
+
+def cart(request):
+    cart = request.session.get('cart', {})
+    products = Product.objects.all()
+    
+    # Prepare data for the cart items
+    cart_items = []
+    for product_id, quantity in cart.items():
+        try:
+            product = Product.objects.get(id=product_id)
+            cart_items.append({
+                'product': product,
+                'quantity': quantity,
+                'total_price': product.price * quantity,
+            })
+        except Product.DoesNotExist:
+            continue
+
+    # Pass the items and total cost to the template
+    total_cost = sum(item['total_price'] for item in cart_items)
+    return render(request, 'products/cart.html', {
+        'cart_items': cart_items,
+        'total_cost': total_cost,
+    })

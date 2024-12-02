@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail
+from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail, update_cart, reduce_from_cart
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,8 +28,10 @@ urlpatterns = [
     path('product_list/', product_list, name='product_list'),  # Direct URL for product list
     path('auth/', include('django.contrib.auth.urls')),
     path('add_to_cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
-    path('remove_from_cart/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
     path('product_detail/<int:product_id>/', product_detail, name='product_detail'),  # Add this line
+    path('update_cart/<int:product_id>/', update_cart, name='update_cart'),
+    path('reduce_from_cart/<int:product_id>/', reduce_from_cart, name='reduce_from_cart'),
+    path('remove_from_cart/<int:product_id>/', remove_from_cart, name='remove_from_cart'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
