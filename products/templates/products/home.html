@@ -1,49 +1,44 @@
-<!-- products/templates/products/home.html -->
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Our Store</title>
-    
-    <!-- Load static files -->
-    {% load static %}
-    
-    <!-- Link the external CSS file -->
+    <title>Home - My Ecommerce Store</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <header>
-        <h1>Welcome to Our E-commerce Store</h1>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'product_list' %}">Products</a></li>
-                <li><a href="{% url 'view_cart' %}">Cart</a></li>
-                <li><a href="{% url 'register' %}">Register</a></li>
-            </ul>
+    <header class="header">
+        <div class="logo">
+            <h1>My Ecommerce Store</h1>
+        </div>
+        <nav class="nav">
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'cart' %}">Cart</a>
+            <a href="{% url 'register' %}">Register</a>
         </nav>
     </header>
 
-    <section>
+    <section class="main-content">
         <h2>Featured Products</h2>
         <div class="product-list">
             {% for product in products %}
                 <div class="product-card">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200" height="200">  <!-- Assuming you have an image field -->
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                     <h3>{{ product.name }}</h3>
                     <p>${{ product.price }}</p>
-                    <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
+                    <div class="product-buttons">
+                        <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-btn">Add to Cart</a>
+                        <a href="{% url 'product_detail' product.id %}" class="view-btn">View</a>
+                    </div>
                 </div>
-            {% empty %}
-                <p>No products available.</p>
             {% endfor %}
         </div>
     </section>
 
-    <footer>
-        <p>© 2024 Our E-commerce Store</p>
+    <footer class="footer">
+        <p>&copy; 2024 My Ecommerce Store</p>
     </footer>
 </body>
 </html>

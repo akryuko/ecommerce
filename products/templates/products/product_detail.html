@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - My Ecommerce Store</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>My Ecommerce Store</h1>
+        </div>
+        <nav class="nav">
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'cart' %}">Cart</a>
+            <a href="{% url 'register' %}">Register</a>
+        </nav>
+    </header>
+
+    <section class="product-detail">
+        <div class="product-info">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+            <h2>{{ product.name }}</h2>
+            <p>${{ product.price }}</p>
+            <p>{{ product.description }}</p>
+            <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-btn">Add to Cart</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2024 My Ecommerce Store</p>
+    </footer>
+</body>
+</html>

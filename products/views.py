@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Cart, CartItem
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from decimal import Decimal
 
 
 def home(request):
@@ -15,23 +16,43 @@ def product_list(request):
     return render(request, 'products/product_list.html', {'products': products})
 
 
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    return render(request, 'products/product_detail.html', {'product': product})
+
+
 # View cart
 @login_required
 def view_cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    # Retrieve the current user's cart
+    cart = Cart.objects.filter(user=request.user).first()
     return render(request, 'products/cart.html', {'cart': cart})
+
 
 # Add to cart
 @login_required
 def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
+    # Assuming price is a Decimal object
+    price = float(product.price)  # Convert Decimal to float
     
-    # Example logic: Add the product to the cart (using session for simplicity)
-    cart = request.session.get('cart', [])
-    cart.append({'product_id': product.id, 'name': product.name, 'price': product.price, 'quantity': 1})
+    # Get the cart from the session
+    cart = request.session.get('cart', {})
+
+    # Add product to cart
+    if product_id in cart:
+        cart[product_id]['quantity'] += 1
+    else:
+        cart[product_id] = {
+            'name': product.name,
+            'price': price,
+            'quantity': 1
+        }
+
+    # Save the cart in the session
     request.session['cart'] = cart
-    
-    return redirect('home')  # Redirect back to the home page after adding to cart
+
+    return redirect('cart')
 
 
 
