@@ -3,12 +3,28 @@ from .models import Product, Cart, CartItem
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from decimal import Decimal
+from django.http import JsonResponse
 
 
 def home(request):
-    # You can select featured products or just show all products
-    products = Product.objects.all()[:6]  # Display top 6 products for now (you can adjust this)
-    return render(request, 'products/home.html', {'products': products})
+    # Get all products or any specific ones
+    products = Product.objects.all()
+
+    # Get the cart items (assuming you're using sessions)
+    cart = request.session.get('cart', {})
+
+    # Make sure cart is a dictionary and only contains integers as values
+    if not isinstance(cart, dict):
+        cart = {}
+
+    # Sum the quantities of items in the cart
+    cart_count = sum(cart.get(product.id, 0) for product in products)
+
+    context = {
+        'products': products,
+        'cart_count': cart_count,  # Pass cart count to the template
+    }
+    return render(request, 'products/home.html', context)
 
 
 def product_list(request):
@@ -32,27 +48,17 @@ def view_cart(request):
 # Add to cart
 @login_required
 def add_to_cart(request, product_id):
-    product = Product.objects.get(id=product_id)
-    # Assuming price is a Decimal object
-    price = float(product.price)  # Convert Decimal to float
+    product = get_object_or_404(Product, id=product_id)
     
-    # Get the cart from the session
+    # Use session to store cart (this is just a basic example)
     cart = request.session.get('cart', {})
-
-    # Add product to cart
-    if product_id in cart:
-        cart[product_id]['quantity'] += 1
-    else:
-        cart[product_id] = {
-            'name': product.name,
-            'price': price,
-            'quantity': 1
-        }
-
-    # Save the cart in the session
+    cart[product_id] = cart.get(product_id, 0) + 1  # Increment the item count in the cart
     request.session['cart'] = cart
 
-    return redirect('cart')
+    # Get the cart count
+    cart_count = sum(cart.values())
+
+    return JsonResponse({'cart_count': cart_count})
 
 
 
