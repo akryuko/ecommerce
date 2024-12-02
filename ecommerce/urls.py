@@ -16,9 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('products/', include('products.urls')),
-]
+    path('', home, name='home'),  # Home page at the root '/'
+    path('register/', register, name='register'),  # Direct URL for register
+    path('cart/', view_cart, name='view_cart'),  # Direct URL for cart
+    path('product_list/', product_list, name='product_list'),  # Direct URL for product list
+    path('auth/', include('django.contrib.auth.urls')),
+    path('add_to_cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
+    path('remove_from_cart/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
 
+]

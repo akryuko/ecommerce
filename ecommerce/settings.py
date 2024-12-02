@@ -113,12 +113,19 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# settings.py
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+# In development, you can also specify additional locations for static files:
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # This tells Django to look in the "static" directory in the root of the project.
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
