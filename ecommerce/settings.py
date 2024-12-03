@@ -51,24 +51,27 @@ MIDDLEWARE = [
 ]
 
 
-
-ROOT_URLCONF = 'ecommerce.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages',  # Required for admin and messages framework
+                'products.context_processors.cart_counter',  # Your custom context processor
             ],
         },
     },
 ]
+
+
+
+ROOT_URLCONF = 'ecommerce.urls'
+
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
@@ -119,10 +122,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# In development, you can also specify additional locations for static files:
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # This tells Django to look in the "static" directory in the root of the project.
+    BASE_DIR / "static",  # Points to ecommerce/static
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Default primary key field type
@@ -135,4 +139,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 

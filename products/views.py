@@ -59,22 +59,38 @@ def view_cart(request):
 
 @login_required
 def add_to_cart(request, product_id):
+    # Get the current cart from session or create an empty cart if not exist
     cart = request.session.get('cart', {})
-    cart = {key: int(value) if isinstance(value, int) else 0 for key, value in cart.items()}  # Ensure valid data
 
+    print(f"Cart before adding: {cart}")  # Debugging line
+
+    # Ensure all values in the cart are integers (in case there was an invalid entry)
+    cart = {key: int(value) if isinstance(value, int) else 0 for key, value in cart.items()}
+
+    # Convert product_id to string (to handle it as a key in the cart dictionary)
     product_id_str = str(product_id)
 
     try:
+        # Check if the product exists
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
+        # If the product doesn't exist, return an error
         return JsonResponse({'error': 'Product not found'}, status=404)
 
+    # Update the cart count for the product
     cart[product_id_str] = cart.get(product_id_str, 0) + 1
-    request.session['cart'] = cart  # Persist cart in session
-    request.session.modified = True  # Ensure session data is saved
+    
+    # Save the updated cart to the session
+    request.session['cart'] = cart
+    request.session.modified = True  # Ensure the session is marked as modified for saving
 
+    # Get the total count of items in the cart
     cart_count = sum(cart.values())
 
+    print(f"Cart after adding: {cart}")  # Debugging line
+
+
+    # Return the cart count as a JSON response
     return JsonResponse({'cart_count': cart_count})
 
 
@@ -158,3 +174,11 @@ def cart(request):
         'cart_items': cart_items,
         'total_cost': total_cost,
     })
+
+
+def get_cart_count(request):
+    # Assuming the cart is stored in the session
+    cart = request.session.get('cart', {})
+    cart_count = sum(cart.values())  # Sum the quantities of all items in the cart
+    return JsonResponse({'cart_count': cart_count})
+
