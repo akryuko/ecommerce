@@ -5,22 +5,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
+    <title>Cart</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Bootstrap CDN -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <header>
-        <h1>Shopping Cart</h1>
-    </header>
+    <div class="container mt-4">
+        <h1 class="mb-4">Your Shopping Cart</h1>
 
-    <main>
-        {% if cart_items %}
-            <table>
+        <div class="table-responsive">
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Product</th>
-                        <th>Quantity</th>
+                        <th>Image</th>
                         <th>Price</th>
+                        <th>Quantity</th>
                         <th>Total</th>
                         <th>Actions</th>
                     </tr>
@@ -28,31 +28,84 @@
                 <tbody>
                     {% for item in cart_items %}
                         <tr>
+                            <td>{{ item.product.name }}</td>
                             <td>
-                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50">
-                                {{ item.product.name }}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px;">
                             </td>
-                            <td>{{ item.quantity }}</td>
                             <td>${{ item.product.price }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="updateCart('{{ item.product.id }}', 'increase')">+</button>
+                                <span>{{ item.quantity }}</span>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="updateCart('{{ item.product.id }}', 'decrease')">-</button>
+                            </td>
                             <td>${{ item.total_price }}</td>
                             <td>
-                                <form method="post" action="{% url 'reduce_from_cart' item.product.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit">-</button>
-                                </form>
-                                <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit">Remove</button>
-                                </form>
+                                <button class="btn btn-sm btn-danger" onclick="removeItem('{{ item.product.id }}')">Remove</button>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <p>Total: ${{ total_cost }}</p>
-        {% else %}
-            <p>Your cart is empty!</p>
-        {% endif %}
-    </main>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <a href="/" class="btn btn-primary">Continue Shopping</a>
+            </div>
+            <div class="col-md-6 text-right">
+                <h3>Total: ${{ total_cost }}</h3>
+                <a href="/checkout/" class="btn btn-success">Go to Checkout</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update cart (increase/decrease)
+        function updateCart(productId, action) {
+            fetch(`/update_cart/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: action }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.cart_count !== undefined) {
+                    // Update the cart count and total price on the page
+                    updateCartCount();
+                    location.reload(); // Refresh the page to reflect updated cart
+                }
+            });
+        }
+
+        // Remove item from cart
+        function removeItem(productId) {
+            fetch(`/remove_from_cart/${productId}/`, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.cart_count !== undefined) {
+                    // Update the cart count and total price on the page
+                    updateCartCount();
+                    location.reload(); // Refresh the page to reflect updated cart
+                }
+            });
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            fetch('/get_cart_count/')
+                .then(response => response.json())
+                .then(data => {
+                    const cartCountElement = document.getElementById('cart-count');
+                    if (data.cart_count !== undefined) {
+                        cartCountElement.textContent = data.cart_count;
+                    }
+                });
+        }
+    </script>
 </body>
 </html>

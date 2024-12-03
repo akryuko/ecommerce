@@ -54,8 +54,10 @@ def view_cart(request):
         except Product.DoesNotExist:
             continue
 
-    return render(request, 'products/cart.html', {'cart_items': cart_items, 'total_price': total_price})
-
+    return render(request, 'products/cart.html', {
+        'cart_items': cart_items,
+        'total_cost': total_price,
+    })
 
 @login_required
 def add_to_cart(request, product_id):
@@ -104,18 +106,35 @@ def reduce_from_cart(request, product_id):
         request.session['cart'] = cart
     return redirect('cart')
 
-def remove_from_cart(request, product_id):
+def update_cart(request, product_id):
+    """Update item quantity or remove item from the cart."""
     cart = request.session.get('cart', {})
-    
-    # Convert product_id to string to match how items are stored in the cart
     product_id_str = str(product_id)
     
-    # Remove the item from the cart if it exists
+    action = request.POST.get('action')
+    if product_id_str in cart:
+        if action == 'increase':
+            cart[product_id_str] += 1
+        elif action == 'decrease':
+            if cart[product_id_str] > 1:
+                cart[product_id_str] -= 1
+            else:
+                del cart[product_id_str]
+    
+    request.session['cart'] = cart
+    return JsonResponse({'cart_count': sum(cart.values())})
+
+
+def remove_from_cart(request, product_id):
+    cart = request.session.get('cart', {})
+    product_id_str = str(product_id)
+
     if product_id_str in cart:
         del cart[product_id_str]
         request.session['cart'] = cart
     
-    return redirect('cart')
+    return JsonResponse({'cart_count': sum(cart.values())})
+
 
 def register(request):
     if request.method == "POST":
