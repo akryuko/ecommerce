@@ -1,37 +1,65 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.name }} - My Ecommerce Store</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Product Detail - {{ product.name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Your custom styles -->
 </head>
 <body>
+    <!-- Header Section -->
     <header class="header">
-        <div class="logo">
+        <div class="container d-flex justify-content-between align-items-center py-3">
             <h1>My Ecommerce Store</h1>
+            <div class="cart-info">
+                <a href="{% url 'cart' %}" class="btn btn-primary">
+                    Cart <span id="cart-count">{{ cart_count }}</span> items
+                </a>
+            </div>
         </div>
-        <nav class="nav">
-            <a href="{% url 'product_list' %}">Products</a>
-            <a href="{% url 'cart' %}">Cart</a>
-            <a href="{% url 'register' %}">Register</a>
-        </nav>
     </header>
 
-    <section class="product-detail">
-        <div class="product-info">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-            <h2>{{ product.name }}</h2>
-            <p>${{ product.price }}</p>
-            <p>{{ product.description }}</p>
-            <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-btn">Add to Cart</a>
-        </div>
-    </section>
+    <!-- Button Row -->
+    <div class="container d-flex justify-content-between">
+        <!-- Back Button -->
+        <button class="btn btn-secondary my-3" onclick="window.history.back();">Back</button>
+        <!-- Go to Cart Button -->
+        <a href="{% url 'cart' %}" class="btn btn-primary my-3">Go to Cart</a>
+    </div>
 
-    <footer class="footer">
+    <!-- Product Details Section -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="row no-gutters">
+                        <!-- Product Image -->
+                        <div class="col-md-6">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top img-fluid" style="object-fit: contain; max-height: 400px;">
+                        </div>
+                        <!-- Product Info -->
+                        <div class="col-md-6">
+                            <div class="card-body">
+                                <h3 class="card-title">{{ product.name }}</h3>
+                                <p class="card-text">{{ product.description }}</p>
+                                <p class="card-text"><strong>Price: ${{ product.price }}</strong></p>
+                                <!-- Add to Cart Button -->
+                                <a href="#" class="btn btn-primary add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer text-center py-4">
         <p>&copy; 2024 My Ecommerce Store</p>
     </footer>
+
+    <script src="{% static 'js/cart.js' %}"></script> <!-- Your JS file for cart functionality -->
 </body>
 </html>

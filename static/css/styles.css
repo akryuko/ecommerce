@@ -176,3 +176,35 @@ h3 {
     top: -5px;
     right: -10px;
 }
+
+
+/* styles.css */
+.card-img-top {
+    object-fit: contain; /* Ensures image retains its aspect ratio */
+    max-width: 100%;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.add-to-cart-btn {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    width: 100%;
+}
+
+footer {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
