@@ -17,6 +17,7 @@
             <thead>
                 <tr>
                     <th>Product</th>
+                    <th>Image</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Total</th>
@@ -26,6 +27,9 @@
                 {% for item in cart_items %}
                     <tr>
                         <td>{{ item.product.name }}</td>
+                        <td>
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px;">
+                        </td>
                         <td>{{ item.quantity }}</td>
                         <td>${{ item.product.price }}</td>
                         <td>${{ item.total_price }}</td>

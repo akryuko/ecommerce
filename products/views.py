@@ -204,10 +204,31 @@ def get_cart_count(request):
 
 
 def checkout(request):
-    # Fetch cart data to display on the checkout page
-    cart_items = []  # Replace with actual logic to fetch cart items
-    total_cost = 0  # Replace with logic to calculate total cost
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login page if user is not authenticated
 
-    # Render the checkout template
-    return render(request, 'products/checkout.html', {'cart_items': cart_items, 'total_cost': total_cost})
+    # Retrieve the cart from the session
+    cart = request.session.get('cart', {})
+    cart_items = []
+    total_cost = 0
+
+    for product_id, quantity in cart.items():
+        try:
+            product = Product.objects.get(id=int(product_id))
+            cart_items.append({
+                'product': product,
+                'quantity': quantity,
+                'total_price': product.price * quantity,
+                'image_url': product.image.url if product.image else None,  # Ensure image field exists
+            })
+            total_cost += product.price * quantity
+        except Product.DoesNotExist:
+            continue  # Skip products that no longer exist
+
+    return render(request, 'products/checkout.html', {
+        'cart_items': cart_items,
+        'total_cost': total_cost,
+    })
+
+
 
