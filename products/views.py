@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Product, Cart, CartItem
+from .models import Product, Cart, CartItem, Order
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from decimal import Decimal
 from django.http import JsonResponse
 from .forms import RegistrationForm
+from django.contrib import messages
 
 
 def home(request):
@@ -204,31 +205,67 @@ def get_cart_count(request):
 
 
 def checkout(request):
-    if not request.user.is_authenticated:
-        return redirect('login')  # Redirect to login page if user is not authenticated
+    if request.method == 'POST':
+        # Retrieve form data
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        postal_code = request.POST.get('postal_code')
+        payment_method = request.POST.get('payment_method')
 
-    # Retrieve the cart from the session
+        # Validate required fields
+        if not all([email, phone, address, city, state, postal_code, payment_method]):
+            messages.error(request, "All fields are required!")
+            return redirect('checkout')
+
+        # Calculate total cost
+        cart = request.session.get('cart', {})
+        total_cost = 0
+        for product_id, quantity in cart.items():
+            try:
+                product = Product.objects.get(id=product_id)
+                total_cost += product.price * quantity
+            except Product.DoesNotExist:
+                continue
+
+        # Save data to the database
+        order = Order.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            email=email,
+            phone=phone,
+            address=address,
+            city=city,
+            state=state,
+            postal_code=postal_code,
+            payment_method=payment_method,
+            total_cost=total_cost,
+        )
+
+        # Clear cart from session after placing the order
+        request.session['cart'] = {}
+        messages.success(request, "Your order has been placed successfully!")
+        return redirect('order_success')
+
+    # If GET request, display cart and checkout form
     cart = request.session.get('cart', {})
     cart_items = []
     total_cost = 0
 
     for product_id, quantity in cart.items():
         try:
-            product = Product.objects.get(id=int(product_id))
+            product = Product.objects.get(id=product_id)
             cart_items.append({
                 'product': product,
                 'quantity': quantity,
                 'total_price': product.price * quantity,
-                'image_url': product.image.url if product.image else None,  # Ensure image field exists
             })
             total_cost += product.price * quantity
         except Product.DoesNotExist:
-            continue  # Skip products that no longer exist
+            continue
 
     return render(request, 'products/checkout.html', {
         'cart_items': cart_items,
         'total_cost': total_cost,
     })
-
-
-

@@ -1,7 +1,9 @@
+from django.shortcuts import render
 from django.urls import path
 from . import views
 from django.contrib.auth.views import LoginView, LogoutView
-
+from django.urls import path
+from .views import checkout, home
 
 urlpatterns = [
     path('', views.home, name='home'),  # Home page URL
@@ -18,6 +20,8 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('get_cart_count/', views.get_cart_count, name='get_cart_count'),
     path('checkout/', views.checkout, name='checkout'),
-
-
+    path('order_success/', lambda request: render(request, 'products/order_success.html'), name='order_success'),
 ]
+
+
+
