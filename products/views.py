@@ -201,3 +201,13 @@ def get_cart_count(request):
     cart_count = sum(cart.values())  # Sum the quantities of all items in the cart
     return JsonResponse({'cart_count': cart_count})
 
+
+
+def checkout(request):
+    # Fetch cart data to display on the checkout page
+    cart_items = []  # Replace with actual logic to fetch cart items
+    total_cost = 0  # Replace with logic to calculate total cost
+
+    # Render the checkout template
+    return render(request, 'products/checkout.html', {'cart_items': cart_items, 'total_cost': total_cost})
+
