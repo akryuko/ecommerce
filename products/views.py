@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Product, Cart, CartItem, Order
+from .models import OrderItem, Product, Cart, CartItem, Order
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from decimal import Decimal
@@ -205,9 +205,13 @@ def get_cart_count(request):
 
 
 def checkout(request):
-    if request.method == 'POST':
-        # Retrieve form data
-        email = request.POST.get('email')
+    # Ensure user is logged in before proceeding
+    if not request.user.is_authenticated:
+        return render(request, 'products/checkout.html', {'error': 'You need to be logged in to checkout.'})
+
+    if request.method == "POST":
+        # Process order creation
+        contact_email = request.POST.get('email')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
         city = request.POST.get('city')
@@ -215,25 +219,29 @@ def checkout(request):
         postal_code = request.POST.get('postal_code')
         payment_method = request.POST.get('payment_method')
 
-        # Validate required fields
-        if not all([email, phone, address, city, state, postal_code, payment_method]):
-            messages.error(request, "All fields are required!")
-            return redirect('checkout')
+        # Decode cart data sent via hidden fields
+        cart_data = request.POST.getlist('cart_data')
+        parsed_cart_data = {}
+        for data in cart_data:
+            try:
+                product_id, quantity = map(int, data.split('-'))
+                parsed_cart_data[product_id] = quantity
+            except ValueError:
+                continue  # Skip invalid entries
 
-        # Calculate total cost
-        cart = request.session.get('cart', {})
+        # Calculate total cost from the decoded cart data
         total_cost = 0
-        for product_id, quantity in cart.items():
+        for product_id, quantity in parsed_cart_data.items():
             try:
                 product = Product.objects.get(id=product_id)
                 total_cost += product.price * quantity
             except Product.DoesNotExist:
-                continue
+                continue  # Skip invalid products
 
-        # Save data to the database
+        # Create order instance
         order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            email=email,
+            user=request.user,
+            email=contact_email,
             phone=phone,
             address=address,
             city=city,
@@ -243,29 +251,44 @@ def checkout(request):
             total_cost=total_cost,
         )
 
-        # Clear cart from session after placing the order
+        # Loop through cart data and save each as an OrderItem
+        for product_id, quantity in parsed_cart_data.items():
+            try:
+                product = Product.objects.get(id=product_id)
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=quantity,
+                    price=product.price
+                )
+            except Product.DoesNotExist:
+                continue  # Skip invalid items
+
+        # Clear the session cart after order creation
         request.session['cart'] = {}
-        messages.success(request, "Your order has been placed successfully!")
-        return redirect('order_success')
+        request.session.modified = True  # Mark session as modified
 
-    # If GET request, display cart and checkout form
-    cart = request.session.get('cart', {})
-    cart_items = []
-    total_cost = 0
+        return redirect('order_success')  # Redirect user after successful order
 
-    for product_id, quantity in cart.items():
+    else:
+        # If GET request, show the checkout page
         try:
-            product = Product.objects.get(id=product_id)
-            cart_items.append({
-                'product': product,
-                'quantity': quantity,
-                'total_price': product.price * quantity,
-            })
-            total_cost += product.price * quantity
+            cart = request.session.get('cart', {})
+            cart_items = []
+            total_cost = 0
+            for product_id, quantity in cart.items():
+                product = Product.objects.get(id=product_id)
+                cart_items.append({
+                    'product': product,
+                    'quantity': quantity,
+                    'total_price': product.price * quantity,
+                })
+                total_cost += product.price * quantity
         except Product.DoesNotExist:
-            continue
+            cart_items = []
+            total_cost = 0
 
-    return render(request, 'products/checkout.html', {
-        'cart_items': cart_items,
-        'total_cost': total_cost,
-    })
+        return render(request, 'products/checkout.html', {
+            'cart_items': cart_items,
+            'total_cost': total_cost,
+        })

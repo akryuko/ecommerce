@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 # No direct import of Product here
 class Cart(models.Model):
@@ -25,15 +26,29 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-    
+
+
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
     address = models.TextField()
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
-    postal_code = models.CharField(max_length=10)
-    payment_method = models.CharField(max_length=20)
+    postal_code = models.CharField(max_length=20)
+    payment_method = models.CharField(max_length=100)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} by {self.email}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    product = models.ForeignKey('products.Product', on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Store the price at the time of purchase
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
