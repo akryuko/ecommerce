@@ -32,15 +32,18 @@
     </header>
 
   
-    
-    
-
-
-    
     <section class="main-content">
         <h2>Featured Products</h2>
-         <!-- Sorting Controls -->
-         <div class="sorting-controls mb-3">
+
+        <!-- Search and Sorting Controls in the same row, closer together -->
+        <div class="d-flex justify-content-end mb-3">
+            <!-- Search Bar, with a smaller margin to the right -->
+            <form method="get" class="form-inline mr-3">
+                <input type="text" name="q" value="{{ search_query }}" class="form-control mr-2" placeholder="Search products...">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
+            <!-- Sorting Controls -->
             <form method="get" class="form-inline">
                 <label for="sort" class="mr-2">Sort By:</label>
                 <select id="sort" name="sort" class="form-control" onchange="this.form.submit()">
@@ -51,6 +54,7 @@
                 </select>
             </form>
         </div>
+
         <div class="product-list">
             {% for product in products %}
                 <div class="product-card">

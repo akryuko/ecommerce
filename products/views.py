@@ -21,8 +21,18 @@ def home(request):
     }
     sort_criteria = allowed_sorting.get(sort_by, 'name')
 
-    # Query products and apply sorting
-    products = Product.objects.all().order_by(sort_criteria)
+    # Get the search query from the request
+    search_query = request.GET.get('q', '')  # Default to empty string if no search query
+
+    # Query products, apply sorting and search filter
+    products = Product.objects.all()
+    
+    if search_query:
+        # Filter products by name (case-insensitive search)
+        products = products.filter(name__icontains=search_query)
+
+    # Apply sorting
+    products = products.order_by(sort_criteria)
 
     # Get the cart items
     cart = request.session.get('cart', {})
@@ -35,11 +45,14 @@ def home(request):
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
+    # Pass the context to the template
     context = {
         'products': products,
         'cart_count': cart_count,
         'sort_by': sort_by,  # Pass the current sorting method
+        'search_query': search_query,  # Pass the search query to maintain it in the form
     }
+
     return render(request, 'products/home.html', context)
 
 
