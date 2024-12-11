@@ -215,3 +215,109 @@ footer {
     height: auto;  /* Allow the height to scale proportionally */
     width: 120px;  /* Adjust the width as needed */
 }
+
+
+/* Footer Styles */
+.footer {
+    background-color: #f8f9fa;
+    padding: 20px 15px; /* Slightly increased padding for better spacing */
+    color: #333;
+    font-size: 16px; /* Increased font size for footer text */
+}
+
+/* Footer Content (Main Flex Container) */
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align content to the center vertically */
+    flex-wrap: wrap;
+    margin-bottom: 20px; /* Increased bottom margin */
+}
+
+/* Footer Section (Each block) */
+.footer-section {
+    flex: 1;
+    margin: 10px; /* Increased margin between sections */
+    max-width: 250px;  /* Limiting width to make sections more compact */
+}
+
+/* Contact Information Section (Left) */
+.footer-contact {
+    flex-basis: 30%; /* Set to 30% width */
+    padding-bottom: 10px; /* Increased bottom padding */
+}
+
+/* Navigation Links Section (Center) */
+.footer-nav-links {
+    flex-basis: 40%; /* Set to 40% width */
+    text-align: center;
+    padding-bottom: 10px; /* Increased bottom padding */
+}
+
+/* Payment Methods Section (Moved here) */
+.footer-payment {
+    flex-basis: 30%; /* Set to 30% width */
+    text-align: center;
+    padding-bottom: 10px; /* Increased bottom padding */
+    order: 2;  /* Move the Payment Methods section to appear between Navigation and Follow Us */
+}
+
+/* Social Media Links Section (Follow Us) */
+.footer-social-media {
+    flex-basis: 30%; /* Set to 30% width */
+    text-align: right;
+    padding-bottom: 10px; /* Increased bottom padding */
+    order: 3;  /* Move the Follow Us section after Payment Methods */
+}
+
+/* Payment Methods Section (Payment icons) */
+.footer-payment ul {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Increased gap between payment icons */
+}
+
+.footer-payment ul li img {
+    width: 50px; /* Increased image size */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Remove bullet points from all unordered lists in the footer */
+.footer ul {
+    list-style-type: none;
+    padding-left: 0; /* Remove default padding */
+    margin-left: 0; /* Remove default margin */
+}
+
+/* Footer Bottom (Copyright) */
+.footer-bottom {
+    text-align: center;
+    font-size: 14px; /* Increased font size */
+    color: #777;
+    margin-top: 10px; /* Increased top margin */
+}
+
+/* Responsive Design (for mobile) */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-section {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .footer-social-media {
+        text-align: center;
+    }
+
+    .footer-payment ul {
+        justify-content: center;
+    }
+}
+
+
+
+

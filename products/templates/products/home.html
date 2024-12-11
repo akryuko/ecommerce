@@ -136,9 +136,56 @@
     </section>
 
     <footer class="footer">
-        <p>&copy; 2024 My Ecommerce Store</p>
+        <div class="footer-content">
+            <!-- Contact Information Section -->
+            <div class="footer-contact footer-section">
+                <h4>Contact Us</h4>
+                <p>Phone: +1234567890</p>
+                <p>Email: contact@store.com</p>
+                <p>Address: 123 Store St, City, Country</p>
+            </div>
+    
+            <!-- Navigation Links Section -->
+            <div class="footer-nav-links footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/terms">Terms and Conditions</a></li>
+                </ul>
+            </div>
+    
+            <!-- Payment Methods Section (Moved here) -->
+            <div class="footer-payment footer-section">
+                <h4>Payment Methods</h4>
+                <ul>
+                    <li><img src="{% static 'images/paypal-logo.png' %}" alt="PayPal"></li>
+                    <li><img src="{% static 'images/visa-logo.png' %}" alt="Visa"></li>
+                    <li><img src="{% static 'images/mastercard-logo.png' %}" alt="MasterCard"></li>
+                </ul>
+            </div>
+    
+            <!-- Social Media Links Section (Follow Us) -->
+            <div class="footer-social-media footer-section">
+                <h4>Follow Us</h4>
+                <ul>
+                    <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
+                    <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+    
+        <!-- Footer Bottom (Copyright) -->
+        <div class="footer-bottom">
+            <p>&copy; 2024 My Ecommerce Store</p>
+        </div>
     </footer>
     
+    
+    
+    
+    
+
     <script src="{% static 'js/cart.js' %}"></script>
 </body>
 </html>
