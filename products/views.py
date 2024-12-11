@@ -6,10 +6,11 @@ from decimal import Decimal
 from django.http import JsonResponse
 from .forms import RegistrationForm
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 
 def home(request):
-    # Get all products or any specific ones
+    # Get all products
     products = Product.objects.all()
 
     # Get the cart items (assuming you're using sessions)
@@ -22,9 +23,16 @@ def home(request):
     # Sum the quantities of items in the cart
     cart_count = sum(cart.get(product.id, 0) for product in products)
 
+    # Add pagination logic
+    paginator = Paginator(products, 12)  # Display 4 products per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)  # Gets the products for the current page
+
     context = {
-        'products': products,
+        'products': page_obj,  # Pass paginated products
         'cart_count': cart_count,  # Pass cart count to the template
+        'paginator': paginator,   # Pass paginator for additional controls (optional)
+        'page_obj': page_obj,     # Current page object
     }
     return render(request, 'products/home.html', context)
 
