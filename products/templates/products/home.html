@@ -30,9 +30,27 @@
             </div>
         </nav>
     </header>
+
+  
+    
+    
+
+
     
     <section class="main-content">
         <h2>Featured Products</h2>
+         <!-- Sorting Controls -->
+         <div class="sorting-controls mb-3">
+            <form method="get" class="form-inline">
+                <label for="sort" class="mr-2">Sort By:</label>
+                <select id="sort" name="sort" class="form-control" onchange="this.form.submit()">
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Name (Z-A)</option>
+                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price (Low to High)</option>
+                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price (High to Low)</option>
+                </select>
+            </form>
+        </div>
         <div class="product-list">
             {% for product in products %}
                 <div class="product-card">

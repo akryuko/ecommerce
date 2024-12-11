@@ -7,34 +7,41 @@ from django.http import JsonResponse
 from .forms import RegistrationForm
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import F
 
 
 def home(request):
-    # Get all products
-    products = Product.objects.all()
+    # Get the sorting parameter from the request
+    sort_by = request.GET.get('sort', 'name')  # Default to sorting by name
+    allowed_sorting = {
+        'name': 'name',
+        'name_desc': '-name',
+        'price': F('price').asc(),
+        'price_desc': F('price').desc(),
+    }
+    sort_criteria = allowed_sorting.get(sort_by, 'name')
 
-    # Get the cart items (assuming you're using sessions)
+    # Query products and apply sorting
+    products = Product.objects.all().order_by(sort_criteria)
+
+    # Get the cart items
     cart = request.session.get('cart', {})
-
-    # Make sure cart is a dictionary and only contains integers as values
     if not isinstance(cart, dict):
         cart = {}
-
-    # Sum the quantities of items in the cart
     cart_count = sum(cart.get(product.id, 0) for product in products)
 
-    # Add pagination logic
-    paginator = Paginator(products, 12)  # Display 4 products per page
+    # Apply pagination
+    paginator = Paginator(products, 12)  # 12 products per page
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)  # Gets the products for the current page
+    products = paginator.get_page(page_number)
 
     context = {
-        'products': page_obj,  # Pass paginated products
-        'cart_count': cart_count,  # Pass cart count to the template
-        'paginator': paginator,   # Pass paginator for additional controls (optional)
-        'page_obj': page_obj,     # Current page object
+        'products': products,
+        'cart_count': cart_count,
+        'sort_by': sort_by,  # Pass the current sorting method
     }
     return render(request, 'products/home.html', context)
+
 
 
 def product_list(request):
