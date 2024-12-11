@@ -208,3 +208,10 @@ footer {
     background-color: #f8f9fa;
     color: #6c757d;
 }
+
+
+/* Option to set a fixed width */
+.logo-img {
+    height: auto;  /* Allow the height to scale proportionally */
+    width: 120px;  /* Adjust the width as needed */
+}
