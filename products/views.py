@@ -179,20 +179,22 @@ def register(request):
 
 
 def update_cart(request, product_id):
-    """Update item quantity or remove item from the cart."""
+    """Update item quantity in the cart."""
     cart = request.session.get('cart', {})
     product_id_str = str(product_id)
-    
+
     # Check for actions from POST request
     action = request.POST.get('action')
     if product_id_str in cart:
-        if action == 'decrease':
+        if action == 'increase':
+            cart[product_id_str] += 1
+        elif action == 'decrease':
             if cart[product_id_str] > 1:
                 cart[product_id_str] -= 1
             else:
-                del cart[product_id_str]  # Remove item if quantity is 0
+                del cart[product_id_str]
         elif action == 'remove':
-            del cart[product_id_str]  # Remove item completely
+            del cart[product_id_str]
 
     # Save updated cart in session
     request.session['cart'] = cart

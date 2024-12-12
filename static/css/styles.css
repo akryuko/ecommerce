@@ -319,5 +319,28 @@ footer {
 }
 
 
+/* Standardize the success button color */
+.btn-success {
+    background-color: rgb(25, 135, 84) !important;  /* Set the standard green */
+    border-color: rgb(25, 135, 84) !important;
+    color: white;  /* Text color */
+}
 
+/* Hover state */
+.btn-success:hover, .btn-success:focus {
+    background-color: rgb(31, 131, 54) !important; /* Slightly darker green on hover */
+    border-color: rgb(31, 131, 54) !important;
+    color: white;
+}
+
+/* Active state */
+.btn-success:active {
+    background-color: rgb(29, 122, 50) !important;  /* Even darker green when pressed */
+    border-color: rgb(29, 122, 50) !important;
+}
+
+/* Optional: Prevent border-radius differences */
+.btn-success {
+    border-radius: 0.25rem !important;  /* Apply consistent border-radius */
+}
 
