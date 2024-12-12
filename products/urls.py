@@ -22,6 +22,8 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('order_success/', lambda request: render(request, 'products/order_success.html'), name='order_success'),
     path('faq/', views.faq, name='faq'),
+    path('about/', views.about, name='about'),
+    path('terms/', views.terms, name='terms'),
 ]
 
 

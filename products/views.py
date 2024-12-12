@@ -354,3 +354,43 @@ def faq(request):
         }
     ]
     return render(request, 'products/faq.html', {'faqs': faqs})
+
+
+def about(request):
+    context = {
+        'store_description': "Welcome to My Ecommerce Store! We specialize in providing high-quality, fresh food products straight to your door. Our mission is to make online grocery shopping easy, convenient, and enjoyable. From farm-fresh produce to your favorite snacks, we’ve got it all.",
+        'image_url': 'images/about.webp'  # Path to the static image
+    }
+    return render(request, 'products/about.html', context)
+
+
+def terms(request):
+    context = {
+        'title': "Terms and Conditions",
+        'content': """
+            Welcome to My Ecommerce Store! By using our website, you agree to the following terms and conditions:
+            
+            1. **Use of Website**: You agree to use this website for lawful purposes only. 
+            
+            2. **Privacy**: We are committed to protecting your privacy. Please review our Privacy Policy for details.
+            
+            3. **Product Availability**: All products are subject to availability. Prices and availability may change without notice.
+            
+            4. **Payments**: All payments must be made in full before orders are processed.
+            
+            5. **Shipping and Delivery**: We aim to deliver your orders on time, but delays may occur due to unforeseen circumstances.
+            
+            6. **Returns and Refunds**: Please refer to our Returns Policy for information on returns and refunds.
+            
+            7. **Intellectual Property**: All content, logos, and trademarks are the property of My Ecommerce Store.
+            
+            8. **Limitation of Liability**: We are not liable for any indirect or consequential losses arising from the use of our website.
+            
+            9. **Changes to Terms**: We may update these terms and conditions from time to time. It is your responsibility to check this page regularly.
+            
+            Thank you for choosing My Ecommerce Store!
+        """
+    }
+    return render(request, 'products/terms.html', context)
+
+

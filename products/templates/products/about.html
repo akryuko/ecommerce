@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - My Ecommerce Store</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>My Ecommerce Store</h1>
+        </div>
+        <nav class="nav">
+            <div class="header-actions">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'faq' %}" class="nav-link">FAQ</a>
+                <a href="{% url 'about' %}" class="nav-link">About Us</a>
+                <a href="{% url 'cart' %}" class="nav-link">Cart</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-5">
+        <div class="text-center">
+            <h2 class="mb-4">About Us</h2>
+            <p>{{ store_description }}</p>
+            <img src="{% static image_url %}" alt="Our Store" class="img-fluid rounded">
+        </div>
+    </main>
+
+    <footer class="footer text-center mt-5">
+        <p>&copy; 2024 My Ecommerce Store</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
