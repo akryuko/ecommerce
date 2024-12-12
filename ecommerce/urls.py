@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.shortcuts import render
 from django.urls import include, path
-from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail, update_cart, reduce_from_cart, get_cart_count, checkout
+from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail, update_cart, reduce_from_cart, get_cart_count, checkout, faq
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -36,6 +36,7 @@ urlpatterns = [
     path('get_cart_count/', get_cart_count, name='get_cart_count'),
     path('checkout/', checkout, name='checkout'),
     path('order_success/', lambda request: render(request, 'products/order_success.html'), name='order_success'),
+    path('faq/', faq, name='faq'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

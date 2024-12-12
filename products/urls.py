@@ -21,6 +21,7 @@ urlpatterns = [
     path('get_cart_count/', views.get_cart_count, name='get_cart_count'),
     path('checkout/', views.checkout, name='checkout'),
     path('order_success/', lambda request: render(request, 'products/order_success.html'), name='order_success'),
+    path('faq/', views.faq, name='faq'),
 ]
 
 

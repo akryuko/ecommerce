@@ -320,3 +320,37 @@ def checkout(request):
             'cart_items': cart_items,
             'total_cost': total_cost,
         })
+
+
+def faq(request):
+    faqs = [
+        {
+            "question": "What is My Ecommerce Store?",
+            "answer": "My Ecommerce Store is your one-stop-shop for the freshest and best-quality food items delivered right to your doorstep."
+        },
+        {
+            "question": "How can I place an order?",
+            "answer": "Browse through our products, add your desired items to the cart, and proceed to checkout to place an order."
+        },
+        {
+            "question": "What payment methods are accepted?",
+            "answer": "We accept credit/debit cards, PayPal, and other secure payment options."
+        },
+        {
+            "question": "Can I cancel or modify my order?",
+            "answer": "Yes, you can modify or cancel your order before it is shipped. Please contact customer support for assistance."
+        },
+        {
+            "question": "Do you offer same-day delivery?",
+            "answer": "Yes, we offer same-day delivery for orders placed before 12 PM in select locations."
+        },
+        {
+            "question": "How can I track my order?",
+            "answer": "You can track your order using the tracking link sent to your email after the order is confirmed."
+        },
+        {
+            "question": "What is your return policy?",
+            "answer": "We offer a hassle-free return policy for damaged or incorrect items. Contact us within 24 hours of delivery."
+        }
+    ]
+    return render(request, 'products/faq.html', {'faqs': faqs})
