@@ -37,7 +37,11 @@
                     <span id="cart-count">{{ cart_count }}</span>  <!-- Dynamic cart count -->
                 </a>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="logout-button">Log out</a>
+                    <!-- Logout Form -->
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link logout-button" style="padding: 0; border: none;">Log out</button>
+                    </form>
                 {% else %}
                     <a href="{% url 'login' %}" class="login-button">Login</a>
                 {% endif %}
@@ -136,55 +140,8 @@
     </section>
 
     <footer class="footer">
-        <div class="footer-content">
-            <!-- Contact Information Section -->
-            <div class="footer-contact footer-section">
-                <h4>Contact Us</h4>
-                <p>Phone: +1234567890</p>
-                <p>Email: contact@store.com</p>
-                <p>Address: 123 Store St, City, Country</p>
-            </div>
-    
-            <!-- Navigation Links Section -->
-            <div class="footer-nav-links footer-section">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="/faq">FAQ</a></li>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/terms">Terms and Conditions</a></li>
-                </ul>
-            </div>
-    
-            <!-- Payment Methods Section (Moved here) -->
-            <div class="footer-payment footer-section">
-                <h4>Payment Methods</h4>
-                <ul>
-                    <li><img src="{% static 'images/paypal-logo.png' %}" alt="PayPal"></li>
-                    <li><img src="{% static 'images/visa-logo.png' %}" alt="Visa"></li>
-                    <li><img src="{% static 'images/mastercard-logo.png' %}" alt="MasterCard"></li>
-                </ul>
-            </div>
-    
-            <!-- Social Media Links Section (Follow Us) -->
-            <div class="footer-social-media footer-section">
-                <h4>Follow Us</h4>
-                <ul>
-                    <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
-                    <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
-                </ul>
-            </div>
-        </div>
-    
-        <!-- Footer Bottom (Copyright) -->
-        <div class="footer-bottom">
-            <p>&copy; 2024 My Ecommerce Store</p>
-        </div>
+        <!-- Footer content here -->
     </footer>
-    
-    
-    
-    
-    
 
     <script src="{% static 'js/cart.js' %}"></script>
 </body>

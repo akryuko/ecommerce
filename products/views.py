@@ -166,16 +166,18 @@ def remove_from_cart(request, product_id):
 
 
 def register(request):
-    if request.method == "POST":
-        form = RegistrationForm(request.POST)
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data["password"])
-            user.save()
-            return redirect('login')  # Redirect to the login page after registration
+            form.save()
+            messages.success(request, 'Account created successfully! You can now log in.')
+            return redirect('login')
     else:
-        form = RegistrationForm()
-    return render(request, 'products/register.html', {'form': form})
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+
+
 
 
 def update_cart(request, product_id):
