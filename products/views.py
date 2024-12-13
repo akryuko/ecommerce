@@ -240,6 +240,8 @@ def checkout(request):
     if not request.user.is_authenticated:
         if request.method == 'POST':
             # Process guest checkout
+            contact_first_name = request.POST.get('first_name')
+            contact_last_name = request.POST.get('last_name')
             contact_email = request.POST.get('email')
             phone = request.POST.get('phone')
             address = request.POST.get('address')
@@ -269,6 +271,8 @@ def checkout(request):
 
             # Create order for guest user
             order = Order.objects.create(
+                first_name=contact_first_name,
+                last_name=contact_last_name,
                 email=contact_email,
                 phone=phone,
                 address=address,
@@ -324,6 +328,8 @@ def checkout(request):
         # Authenticated user checkout process
         if request.method == 'POST':
             # Process order creation for authenticated user
+            contact_first_name = request.POST.get('first_name')
+            contact_last_name = request.POST.get('last_name')
             contact_email = request.POST.get('email')
             phone = request.POST.get('phone')
             address = request.POST.get('address')
@@ -354,6 +360,8 @@ def checkout(request):
             # Create order for authenticated user
             order = Order.objects.create(
                 user=request.user,
+                first_name=contact_first_name,
+                last_name=contact_last_name,
                 email=contact_email,
                 phone=phone,
                 address=address,
