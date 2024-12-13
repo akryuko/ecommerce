@@ -235,6 +235,7 @@ def get_cart_count(request):
     return JsonResponse({'cart_count': cart_count})
 
 
+
 def checkout(request):
     # Handle guest checkout scenario
     if not request.user.is_authenticated:
@@ -282,6 +283,9 @@ def checkout(request):
                 payment_method=payment_method,
                 total_cost=total_cost,
             )
+
+            request.session['order_id'] = order.id  # Save the order_id in session
+
 
             # Create OrderItems
             for product_id, quantity in parsed_cart_data.items():
@@ -372,6 +376,9 @@ def checkout(request):
                 total_cost=total_cost,
             )
 
+            request.session['order_id'] = order.id  # Save the order_id in session
+
+
             # Create OrderItems for each product in the cart
             for product_id, quantity in parsed_cart_data.items():
                 try:
@@ -413,6 +420,29 @@ def checkout(request):
                 'cart_items': cart_items,
                 'total_cost': total_cost,
             })
+
+
+
+def order_success(request):
+    # Retrieve the order ID from the session or URL
+    order_id = request.session.get('order_id')
+    order = get_object_or_404(Order, id=order_id)
+
+    
+    if order_id:
+        try:
+            # Retrieve the order from the database
+            order = Order.objects.get(id=order_id)
+            
+            # Pass the order to the template for rendering
+            return render(request, 'products/order_success.html', {'order': order})
+        except Order.DoesNotExist:
+            # If order not found, redirect to home or error page
+            return redirect('home')
+    
+    return render(request, 'products/order_success.html', {
+        'order': order,
+    })
 
 
 

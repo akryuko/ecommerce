@@ -26,3 +26,11 @@ def get_item_image(products, product_id):
         return products.get(id=product_id).image.url
     except Product.DoesNotExist:
         return ""
+
+
+@register.filter
+def multiply(value, arg):
+    try:
+        return value * arg
+    except (ValueError, TypeError):
+        return 0  # Return 0 if there's an error

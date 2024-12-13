@@ -1,5 +1,62 @@
-<div class="container mt-5">
-    <h1>Order Placed Successfully!</h1>
-    <p>Thank you for placing your order. We will process it soon.</p>
-    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return to Home</a>
-</div>
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}Order Success - My Ecommerce Store{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-success">Order Placed Successfully!</h1>
+        <p>Thank you for placing your order, <strong>{{ order.first_name }} {{ order.last_name }}</strong>.</p>
+        <p>We have received your order and will process it soon. You will receive an email confirmation shortly with the details.</p>
+
+        <h3>Order Summary:</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderitem_set.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <!-- Use the 'default' filter to fallback to a default image if no image exists -->
+                        <td>
+                            <img src="{{ item.product.image.url }}" 
+                                 alt="{{ item.product.name }}" 
+                                 style="width: 50px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.price }}</td>
+                        <td>${{ item.quantity|multiply:item.price }}</td>  <!-- Total per product -->
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No items found in this order.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        
+
+        <h4 class="text-right">Total: ${{ order.total_cost }}</h4>
+
+        <h3>Shipping Information:</h3>
+        <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.postal_code }}</p>
+        <p><strong>Phone:</strong> {{ order.phone }}</p>
+
+        <h3>Payment Method:</h3>
+        <p>{{ order.payment_method }}</p>
+
+        <h4>Estimated Delivery:</h4>
+        <p>We estimate that your order will arrive within 5-7 business days. You will receive a tracking number once your order is shipped.</p>
+
+        <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return to Home</a>
+    </div>
+{% endblock %}
