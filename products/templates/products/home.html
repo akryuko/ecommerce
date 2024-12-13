@@ -1,196 +1,95 @@
-{% load static %}
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home - My Ecommerce Store</title>
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">  
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-        
-        <style>
-            /* Directly in the head to test the changes */
-            .logo-img {
-                max-height: 80px;  /* Try reducing further */
-                width: auto;
-            }
-        </style>
-    </head>
-    
+{% block title %}Home - Food Store{% endblock %}
 
-<body>
-    <header class="header d-flex justify-content-between align-items-center">
-        <!-- Logo on the left side -->
-        <div class="logo">
-            <a href="{% url 'home' %}">
-                <img src="{% static 'images/logo.png' %}" alt="My Ecommerce Store Logo" class="logo-img">
-            </a>
-        </div>
+{% block content %}
+<section class="main-content">
+    <h2>Featured Products</h2>
 
-        <!-- Navigation and Cart Actions on the right side -->
-        <nav class="nav">
-            <div class="header-actions">
-                <a href="{% url 'cart' %}" class="cart-icon-container">
-                    <i class="bi bi-cart"></i> <!-- Cart icon -->
-                    <span id="cart-count">{{ cart_count }}</span>  <!-- Dynamic cart count -->
-                </a>
-                {% if user.is_authenticated %}
-                    <!-- Logout Form -->
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-link logout-button" style="padding: 0; border: none;">Log out</button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}" class="login-button">Login</a>
-                {% endif %}
-            </div>
-        </nav>
-    </header>
+    <!-- Search and Sorting Controls in the same row, closer together -->
+    <div class="d-flex justify-content-end mb-3">
+        <!-- Search Bar -->
+        <form method="get" class="form-inline mr-3">
+            <input type="text" name="q" value="{{ search_query }}" class="form-control mr-2" placeholder="Search products...">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
 
-    <section class="main-content">
-        <h2>Featured Products</h2>
-
-        <!-- Search and Sorting Controls in the same row, closer together -->
-        <div class="d-flex justify-content-end mb-3">
-            <!-- Search Bar -->
-            <form method="get" class="form-inline mr-3">
-                <input type="text" name="q" value="{{ search_query }}" class="form-control mr-2" placeholder="Search products...">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-
-            <!-- Clear Search Button -->
-            {% if search_query %}
-                <form method="get" class="form-inline">
-                    <button type="submit" class="btn btn-secondary">Clear Search</button>
-                </form>
-            {% endif %}
-
-            <!-- Sorting Controls -->
+        <!-- Clear Search Button -->
+        {% if search_query %}
             <form method="get" class="form-inline">
-                <label for="sort" class="mr-2">Sort By:</label>
-                <select id="sort" name="sort" class="form-control" onchange="this.form.submit()">
-                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
-                    <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Name (Z-A)</option>
-                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price (Low to High)</option>
-                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price (High to Low)</option>
-                </select>
+                <button type="submit" class="btn btn-secondary">Clear Search</button>
             </form>
-        </div>
+        {% endif %}
 
-        <div class="product-list">
-            {% for product in products %}
-                <div class="product-card">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                    <h3>{{ product.name }}</h3>
-                    <p>${{ product.price }}</p>
-                    <div class="product-buttons">
-                        <a href="#" class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</a>
-                        <a href="{% url 'product_detail' product.id %}" class="view-btn">View</a>
-                    </div>
+        <!-- Sorting Controls -->
+        <form method="get" class="form-inline">
+            <label for="sort" class="mr-2">Sort By:</label>
+            <select id="sort" name="sort" class="form-control" onchange="this.form.submit()">
+                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Name (Z-A)</option>
+                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price (Low to High)</option>
+                <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price (High to Low)</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="product-list">
+        {% for product in products %}
+            <div class="product-card">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                <h3>{{ product.name }}</h3>
+                <p>${{ product.price }}</p>
+                <div class="product-buttons">
+                    <a href="#" class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</a>
+                    <a href="{% url 'product_detail' product.id %}" class="view-btn">View</a>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
+    </div>
 
-        <!-- Pagination Controls -->
-        <div class="pagination-container mt-4">
-            <nav>
-                <ul class="pagination justify-content-center">
-                    {% if products.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">First</span>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link">Previous</span>
-                        </li>
-                    {% endif %}
-
-                    <li class="page-item active">
-                        <span class="page-link">
-                            Page {{ products.number }} of {{ products.paginator.num_pages }}
-                        </span>
+    <!-- Pagination Controls -->
+    <div class="pagination-container mt-4">
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
                     </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">First</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                {% endif %}
 
-                    {% if products.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ products.paginator.num_pages }}">Last</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">Next</span>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link">Last</span>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-    </section>
+                <li class="page-item active">
+                    <span class="page-link">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}
+                    </span>
+                </li>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <!-- Contact Information Section -->
-            <div class="footer-contact footer-section">
-                <h4>Contact Us</h4>
-                <p>Phone: +1234567890</p>
-                <p>Email: contact@store.com</p>
-                <p>Address: 123 Store St, City, Country</p>
-            </div>
-    
-            <!-- Navigation Links Section -->
-            <div class="footer-nav-links footer-section">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="/faq">FAQ</a></li>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/terms">Terms and Conditions</a></li>
-                </ul>
-            </div>
-    
-            <!-- Payment Methods Section (Moved here) -->
-            <div class="footer-payment footer-section">
-                <h4>Payment Methods</h4>
-                <ul>
-                    <li><img src="{% static 'images/paypal-logo.png' %}" alt="PayPal"></li>
-                    <li><img src="{% static 'images/visa-logo.png' %}" alt="Visa"></li>
-                    <li><img src="{% static 'images/mastercard-logo.png' %}" alt="MasterCard"></li>
-                </ul>
-            </div>
-    
-            <!-- Social Media Links Section (Follow Us) -->
-            <div class="footer-social-media footer-section">
-                <h4>Follow Us</h4>
-                <ul>
-                    <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
-                    <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
-                </ul>
-            </div>
-        </div>
-    
-        <!-- Footer Bottom (Copyright) -->
-        <div class="footer-bottom">
-            <p>&copy; 2024 My Ecommerce Store</p>
-        </div>
-    </footer>
-    
-    
-    
-    
-    
-
-
-    <script src="{% static 'js/cart.js' %}"></script>
-</body>
-</html>
+                {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.paginator.num_pages }}">Last</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Last</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</section>
+{% endblock %}
