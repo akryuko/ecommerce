@@ -8,6 +8,8 @@ from .forms import RegistrationForm
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.contrib.auth import login
+
 
 
 def home(request):
@@ -88,7 +90,6 @@ def view_cart(request):
         'total_cost': total_price,
     })
 
-@login_required
 def add_to_cart(request, product_id):
     # Get the current cart from session or create an empty cart if not exist
     cart = request.session.get('cart', {})
@@ -119,7 +120,6 @@ def add_to_cart(request, product_id):
     cart_count = sum(cart.values())
 
     print(f"Cart after adding: {cart}")  # Debugging line
-
 
     # Return the cart count as a JSON response
     return JsonResponse({'cart_count': cart_count})
@@ -235,95 +235,204 @@ def get_cart_count(request):
     return JsonResponse({'cart_count': cart_count})
 
 
-
 def checkout(request):
-    # Ensure user is logged in before proceeding
+    # Handle guest checkout scenario
     if not request.user.is_authenticated:
-        return render(request, 'products/checkout.html', {'error': 'You need to be logged in to checkout.'})
+        if request.method == 'POST':
+            # Process guest checkout
+            contact_email = request.POST.get('email')
+            phone = request.POST.get('phone')
+            address = request.POST.get('address')
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            postal_code = request.POST.get('postal_code')
+            payment_method = request.POST.get('payment_method')
 
-    if request.method == "POST":
-        # Process order creation
-        contact_email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        state = request.POST.get('state')
-        postal_code = request.POST.get('postal_code')
-        payment_method = request.POST.get('payment_method')
+            # Decode cart data
+            cart_data = request.POST.getlist('cart_data')
+            parsed_cart_data = {}
+            for data in cart_data:
+                try:
+                    product_id, quantity = map(int, data.split('-'))
+                    parsed_cart_data[product_id] = quantity
+                except ValueError:
+                    continue  # Skip invalid entries
 
-        # Decode cart data sent via hidden fields
-        cart_data = request.POST.getlist('cart_data')
-        parsed_cart_data = {}
-        for data in cart_data:
-            try:
-                product_id, quantity = map(int, data.split('-'))
-                parsed_cart_data[product_id] = quantity
-            except ValueError:
-                continue  # Skip invalid entries
+            # Calculate total cost from the decoded cart data
+            total_cost = 0
+            for product_id, quantity in parsed_cart_data.items():
+                try:
+                    product = Product.objects.get(id=product_id)
+                    total_cost += product.price * quantity
+                except Product.DoesNotExist:
+                    continue  # Skip invalid products
 
-        # Calculate total cost from the decoded cart data
-        total_cost = 0
-        for product_id, quantity in parsed_cart_data.items():
-            try:
-                product = Product.objects.get(id=product_id)
-                total_cost += product.price * quantity
-            except Product.DoesNotExist:
-                continue  # Skip invalid products
+            # Create order for guest user
+            order = Order.objects.create(
+                email=contact_email,
+                phone=phone,
+                address=address,
+                city=city,
+                state=state,
+                postal_code=postal_code,
+                payment_method=payment_method,
+                total_cost=total_cost,
+            )
 
-        # Create order instance
-        order = Order.objects.create(
-            user=request.user,
-            email=contact_email,
-            phone=phone,
-            address=address,
-            city=city,
-            state=state,
-            postal_code=postal_code,
-            payment_method=payment_method,
-            total_cost=total_cost,
-        )
+            # Create OrderItems
+            for product_id, quantity in parsed_cart_data.items():
+                try:
+                    product = Product.objects.get(id=product_id)
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                        price=product.price
+                    )
+                except Product.DoesNotExist:
+                    continue  # Skip invalid items
 
-        # Loop through cart data and save each as an OrderItem
-        for product_id, quantity in parsed_cart_data.items():
-            try:
-                product = Product.objects.get(id=product_id)
-                OrderItem.objects.create(
-                    order=order,
-                    product=product,
-                    quantity=quantity,
-                    price=product.price
-                )
-            except Product.DoesNotExist:
-                continue  # Skip invalid items
+            # Clear the session cart after order creation
+            request.session['cart'] = {}
+            request.session.modified = True
 
-        # Clear the session cart after order creation
-        request.session['cart'] = {}
-        request.session.modified = True  # Mark session as modified
-
-        return redirect('order_success')  # Redirect user after successful order
-
-    else:
-        # If GET request, show the checkout page
-        try:
+            # Redirect guest to account creation prompt
+            return redirect('account_creation_prompt', order_id=order.id)
+        else:
+            # Display checkout page for guests
             cart = request.session.get('cart', {})
             cart_items = []
             total_cost = 0
             for product_id, quantity in cart.items():
-                product = Product.objects.get(id=product_id)
-                cart_items.append({
-                    'product': product,
-                    'quantity': quantity,
-                    'total_price': product.price * quantity,
-                })
-                total_cost += product.price * quantity
-        except Product.DoesNotExist:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    cart_items.append({
+                        'product': product,
+                        'quantity': quantity,
+                        'total_price': product.price * quantity,
+                    })
+                    total_cost += product.price * quantity
+                except Product.DoesNotExist:
+                    continue  # Skip invalid products
+
+            return render(request, 'products/checkout.html', {
+                'cart_items': cart_items,
+                'total_cost': total_cost,
+            })
+
+    else:
+        # Authenticated user checkout process
+        if request.method == 'POST':
+            # Process order creation for authenticated user
+            contact_email = request.POST.get('email')
+            phone = request.POST.get('phone')
+            address = request.POST.get('address')
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            postal_code = request.POST.get('postal_code')
+            payment_method = request.POST.get('payment_method')
+
+            # Decode cart data
+            cart_data = request.POST.getlist('cart_data')
+            parsed_cart_data = {}
+            for data in cart_data:
+                try:
+                    product_id, quantity = map(int, data.split('-'))
+                    parsed_cart_data[product_id] = quantity
+                except ValueError:
+                    continue  # Skip invalid entries
+
+            # Calculate total cost from the decoded cart data
+            total_cost = 0
+            for product_id, quantity in parsed_cart_data.items():
+                try:
+                    product = Product.objects.get(id=product_id)
+                    total_cost += product.price * quantity
+                except Product.DoesNotExist:
+                    continue  # Skip invalid products
+
+            # Create order for authenticated user
+            order = Order.objects.create(
+                user=request.user,
+                email=contact_email,
+                phone=phone,
+                address=address,
+                city=city,
+                state=state,
+                postal_code=postal_code,
+                payment_method=payment_method,
+                total_cost=total_cost,
+            )
+
+            # Create OrderItems for each product in the cart
+            for product_id, quantity in parsed_cart_data.items():
+                try:
+                    product = Product.objects.get(id=product_id)
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                        price=product.price
+                    )
+                except Product.DoesNotExist:
+                    continue  # Skip invalid items
+
+            # Clear the session cart after order creation
+            request.session['cart'] = {}
+            request.session.modified = True
+
+            # Redirect authenticated user to success page
+            return redirect('order_success')
+
+        else:
+            # Show the checkout page for authenticated users
+            cart = request.session.get('cart', {})
             cart_items = []
             total_cost = 0
+            for product_id, quantity in cart.items():
+                try:
+                    product = Product.objects.get(id=product_id)
+                    cart_items.append({
+                        'product': product,
+                        'quantity': quantity,
+                        'total_price': product.price * quantity,
+                    })
+                    total_cost += product.price * quantity
+                except Product.DoesNotExist:
+                    continue  # Skip invalid products
 
-        return render(request, 'products/checkout.html', {
-            'cart_items': cart_items,
-            'total_cost': total_cost,
-        })
+            return render(request, 'products/checkout.html', {
+                'cart_items': cart_items,
+                'total_cost': total_cost,
+            })
+
+
+
+def account_creation_prompt(request, order_id):
+    order = Order.objects.get(id=order_id)
+
+    if request.method == 'POST':
+        # Create the user account
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Log the user in
+            login(request, user)
+
+            # Link the guest order to the new user account
+            order.user = user
+            order.save()
+
+            # Redirect to order success page or dashboard
+            return redirect('order_success')
+
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'products/account_creation_prompt.html', {'order_id': order_id})
+
+
+
 
 
 def faq(request):

@@ -24,7 +24,13 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('about/', views.about, name='about'),
     path('terms/', views.terms, name='terms'),
+    path('account/creation_prompt/<int:order_id>/', views.account_creation_prompt, name='account_creation_prompt'),
+
+
 ]
+
+
+
 
 
 

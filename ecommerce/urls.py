@@ -17,13 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.shortcuts import render
 from django.urls import include, path
-from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail, update_cart, reduce_from_cart, get_cart_count, checkout, faq, about, terms
+from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail, update_cart, reduce_from_cart, get_cart_count, checkout, faq, about, terms, account_creation_prompt
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),  # Home page at the root '/'
+    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('register/', register, name='register'),  # Direct URL for register
     path('cart/', view_cart, name='cart'),  # Direct URL for cart
     path('product_list/', product_list, name='product_list'),  # Direct URL for product list
@@ -39,6 +41,8 @@ urlpatterns = [
     path('faq/', faq, name='faq'),
     path('about/', about, name='about'),
     path('terms/', terms, name='terms'),
+    path('account/creation_prompt/<int:order_id>/', account_creation_prompt, name='account_creation_prompt'),
+
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
