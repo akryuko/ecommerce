@@ -1,5 +1,7 @@
 from django import template
 from products.models import Product
+from urllib.parse import urlencode, parse_qs, urlparse
+
 
 register = template.Library()
 
@@ -34,3 +36,11 @@ def multiply(value, arg):
         return value * arg
     except (ValueError, TypeError):
         return 0  # Return 0 if there's an error
+    
+
+@register.filter
+def remove_query_param(query_string, param_to_remove):
+    query_params = parse_qs(query_string)
+    if param_to_remove in query_params:
+        del query_params[param_to_remove]
+    return urlencode(query_params, doseq=True)
