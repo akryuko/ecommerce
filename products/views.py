@@ -439,18 +439,19 @@ def order_success(request):
     })
 
 
-
-
-
 def account_creation_prompt(request, order_id):
+    # Get the order based on the provided order_id
     order = Order.objects.get(id=order_id)
+    
+    # Use 'order_items' to get the related items for this order
+    order_items = order.order_items.all()  # 'order_items' is the related_name in the OrderItem model
 
     if request.method == 'POST':
-        # Create the user account
+        # Create the user account using the form
         form = UserCreationForm(request.POST)
         if form.is_valid():
+            # Save the new user and log them in
             user = form.save()
-            # Log the user in
             login(request, user)
 
             # Link the guest order to the new user account
@@ -463,9 +464,13 @@ def account_creation_prompt(request, order_id):
     else:
         form = UserCreationForm()
 
-    return render(request, 'products/account_creation_prompt.html', {'order_id': order_id})
-
-
+    # Render the account_creation_prompt page with the order and items context
+    context = {
+        'order': order,
+        'order_items': order_items,
+        'form': form,
+    }
+    return render(request, 'products/account_creation_prompt.html', context)
 
 
 

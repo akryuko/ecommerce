@@ -1,11 +1,74 @@
-<h2>Thank you for your order!</h2>
+{% extends 'base.html' %}
 
-<p>Would you like to create an account to track your order and receive discounts on future purchases?</p>
+{% load custom_filters %}
 
-<!-- Link to the registration page -->
-<a href="{% url 'register' %}">
-    <button type="button">Create Account</button>
-</a>
+{% block title %}Order Success - My Ecommerce Store{% endblock %}
 
-<p>If you already have an account, <a href="{% url 'login' %}">log in here</a>.</p>
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center d-flex justify-content-center align-items-center vh-">
+        <h1 class="text-success">Order Placed Successfully!</h1>
+    </div>   
+
+
+
+    <p>We have received your order, <strong>{{ order.first_name }} {{ order.last_name }}</strong>.</p>
+    <p>Your order is being processed, and you will receive an email confirmation with the details soon.</p>
+
+    <h3>Order Summary:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Image</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>
+                    {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50">
+                    {% else %}
+                    No image
+                    {% endif %}
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price }}</td>
+                <td>${{ item.quantity|multiply:item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="text-right">Total: ${{ order.total_cost }}</h4>
+
+    <h3>Shipping Information:</h3>
+    <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.postal_code }}</p>
+    <p><strong>Phone:</strong> {{ order.phone }}</p>
+
+    <h3>Payment Method:</h3>
+    <p>{{ order.payment_method }}</p>
+
+    <h4>Estimated Delivery:</h4>
+    <p>We estimate that your order will arrive within 5-7 business days. You will receive a tracking number once your order is shipped.</p>
+
+    <!-- Options for Account Creation or Login -->
+    <p>Would you like to create an account to track your order and receive discounts on future purchases?</p>
+
+    <!-- Link to the registration page -->
+    <a href="{% url 'register' %}">
+        <button type="button" class="btn-create-account">Create Account</button>
+    </a>
+
+    <p>If you already have an account, <a href="{% url 'login' %}" class="btn-login">log in here</a>.</p>
+
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return to Home</a>
+</div>
+{% endblock %}
+
 
