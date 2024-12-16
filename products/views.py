@@ -424,25 +424,21 @@ def checkout(request):
 
 
 def order_success(request):
-    # Retrieve the order ID from the session or URL
+    # Retrieve the order ID from the session
     order_id = request.session.get('order_id')
-    order = get_object_or_404(Order, id=order_id)
+    if not order_id:
+        return redirect('home')  # Redirect if no order ID found
 
-    
-    if order_id:
-        try:
-            # Retrieve the order from the database
-            order = Order.objects.get(id=order_id)
-            
-            # Pass the order to the template for rendering
-            return render(request, 'products/order_success.html', {'order': order})
-        except Order.DoesNotExist:
-            # If order not found, redirect to home or error page
-            return redirect('home')
-    
+    # Fetch the order and related order items
+    order = get_object_or_404(Order, id=order_id)
+    order_items = order.order_items.all()  # Use the correct related name
+
     return render(request, 'products/order_success.html', {
         'order': order,
+        'order_items': order_items,
     })
+
+
 
 
 

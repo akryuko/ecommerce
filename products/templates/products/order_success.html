@@ -6,12 +6,15 @@
 
 {% block content %}
     <div class="container mt-5">
-        <h1 class="text-success">Order Placed Successfully!</h1>
+        <div class="text-center d-flex justify-content-center align-items-center vh-">
+            <h1 class="text-success">Order Placed Successfully!</h1>
+        </div>     
+                
         <p>Thank you for placing your order, <strong>{{ order.first_name }} {{ order.last_name }}</strong>.</p>
         <p>We have received your order and will process it soon. You will receive an email confirmation shortly with the details.</p>
 
         <h3>Order Summary:</h3>
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Product</th>
@@ -22,26 +25,25 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in order.orderitem_set.all %}
-                    <tr>
-                        <td>{{ item.product.name }}</td>
-                        <!-- Use the 'default' filter to fallback to a default image if no image exists -->
-                        <td>
-                            <img src="{{ item.product.image.url }}" 
-                                 alt="{{ item.product.name }}" 
-                                 style="width: 50px; height: 50px; object-fit: cover;">
-                        </td>
-                        <td>{{ item.quantity }}</td>
-                        <td>${{ item.price }}</td>
-                        <td>${{ item.quantity|multiply:item.price }}</td>  <!-- Total per product -->
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No items found in this order.</td>
-                    </tr>
+                {% for item in order_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50">
+                        {% else %}
+                        No image
+                        {% endif %}
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.quantity|multiply:item.price }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
+        
         
         
 
