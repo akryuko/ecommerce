@@ -1,7 +1,6 @@
 # Test Case Title
 
 ## Homepage Tests
-<<<<<<< HEAD
 1. Verify that the homepage loads successfully. ✅ 
 2. Verify the title of the homepage is correct (e.g., "Welcome to Our Store"). ✅ 
 3. Verify that products are displayed on the homepage. ✅ 
@@ -9,15 +8,6 @@
 5. Verify the presence of sorting options for products (e.g., by price, name, etc.). ✅ 
 6. Verify that the search bar is visible and functional. ✅ 
 7. Verify that the "Add to Cart" buttons work correctly. ✅ 
-=======
-1. Verify that the homepage loads successfully. ✅
-2. Verify the title of the homepage is correct (e.g., "Welcome to Our Store"). ✅
-3. Verify that products are displayed on the homepage. ✅ 
-4. Verify that the cart icon is visible and displays the correct number of items in the cart. ✅
-5. Verify the presence of sorting options for products (e.g., by price, name, etc.). ✅
-6. Verify that the search bar is visible and functional.
-7. Verify that the "Add to Cart" buttons work correctly.
->>>>>>> c7b97854f57db853a11190d164206980e4401aed
 8. Verify that the pagination works correctly (if there is pagination for products).
 
 ## Product Page Tests
