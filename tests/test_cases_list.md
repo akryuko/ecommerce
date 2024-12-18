@@ -1,6 +1,6 @@
 # Test Case Title
 
-## Homepage Tests
+## Homepage Tests (test_homepage.py)
 1. Verify that the homepage loads successfully. ✅ 
 2. Verify the title of the homepage is correct (e.g., "Welcome to Our Store"). ✅ 
 3. Verify that products are displayed on the homepage. ✅ 
@@ -10,8 +10,8 @@
 7. Verify that the "Add to Cart" buttons work correctly. ✅ 
 8. Verify that the pagination works correctly (if there is pagination for products). ✅
 
-## Product Page Tests
-9. Verify that the product page loads successfully when a product is clicked.
+## Product Page Tests (test_product_page.py)
+9. Verify that the product page loads successfully when View button for product is clicked
 10. Verify the product image is displayed on the product detail page.
 11. Verify the correct product name, description, and price are displayed on the product detail page.
 12. Verify the "Add to Cart" button works on the product page.

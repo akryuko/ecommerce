@@ -12,28 +12,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-# Fixture for setting up the WebDriver
-@pytest.fixture(scope="module")
-def driver():
-    # Set up Chrome options
-    options = Options()
-    # Ensure headless mode is not enabled (comment this line if you want to run headless)
-    # options.add_argument('--headless')  # Optional: Run in headless mode
-    options.add_argument('--disable-gpu')  # Optional: Disable GPU acceleration
-
-    # Set up the Service object for the Chrome driver
-    service = Service(ChromeDriverManager().install())
-
-    # Initialize the WebDriver
-    driver = webdriver.Chrome(service=service, options=options)
-
-    # Provide the driver instance for the tests
-    yield driver
-    
-    # Cleanup: Quit the driver after the tests are done
-    driver.quit()
-
-
 # Test case 1,2: Verify the homepage load and title
 def test_homepage_title(driver):
     driver.get("http://127.0.0.1:8000")  # Replace with your local URL
