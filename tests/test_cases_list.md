@@ -8,7 +8,7 @@
 5. Verify the presence of sorting options for products (e.g., by price, name, etc.). ✅ 
 6. Verify that the search bar is visible and functional. ✅ 
 7. Verify that the "Add to Cart" buttons work correctly. ✅ 
-8. Verify that the pagination works correctly (if there is pagination for products).
+8. Verify that the pagination works correctly (if there is pagination for products). ✅
 
 ## Product Page Tests
 9. Verify that the product page loads successfully when a product is clicked.

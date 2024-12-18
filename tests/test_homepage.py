@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 # Fixture for setting up the WebDriver
@@ -275,3 +275,30 @@ def test_add_to_cart(driver):
 
 
 # Test case 8: Verify that the pagination works correctly (if there is pagination for products)
+def test_pagination(driver):
+    base_url = "http://127.0.0.1:8000"
+    driver.get(base_url)
+
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "pagination")))
+
+    # Click the "Next" button
+    next_btn = driver.find_element(By.LINK_TEXT, "Next")
+    next_btn.click()
+    wait.until(EC.staleness_of(next_btn))  # Wait for the element to become stale (after clicking)
+
+    # Click the "Previous" button
+    prev_btn = driver.find_element(By.LINK_TEXT, "Previous")
+    prev_btn.click()
+    wait.until(EC.staleness_of(prev_btn))  # Wait for the element to become stale (after clicking)
+
+    # Click the "Last" button
+    last_btn = driver.find_element(By.LINK_TEXT, "Last")
+    last_btn.click()
+    wait.until(EC.staleness_of(last_btn))  # Wait for the element to become stale (after clicking)
+
+    # Click the "First" button
+    first_btn = driver.find_element(By.LINK_TEXT, "First")
+    first_btn.click()
+    wait.until(EC.staleness_of(first_btn))  # Wait for the element to become stale (after clicking)
+
