@@ -18,8 +18,8 @@
 13. Verify the "Back" and "Go to Cart" buttons work on the product page. ✅
 
 ## Cart Functionality Tests
-14. Verify that an item can be added to the cart successfully.
-15. Verify that the cart displays the correct total price after items are added.
+14. Verify that products can be added to the cart successfully. ✅
+15. Verify that the cart displays the correct total price after items are added. ✅
 16. Verify that the cart updates the item quantity correctly when the quantity is changed.
 17. Verify that an item can be removed from the cart successfully.
 18. Verify that the "Go to Checkout" button works correctly and leads to the checkout page.
