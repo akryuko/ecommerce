@@ -169,8 +169,52 @@ def test_go_to_checkout_button(driver):
     WebDriverWait(driver, 10).until(
         EC.url_contains("/checkout/")
     )
-    
+
     # Step 8: Verify that the user is on the checkout page
     assert "/checkout/" in driver.current_url, f"Expected to be on checkout page, but found {driver.current_url}"
 
     print("Successfully redirected to the checkout page.")
+
+
+# Test cas 19: Verify that the cart is persistent even if the user navigates away from the page
+def test_cart_persistence(driver):
+    # Step 1: Navigate to the e-commerce website's homepage
+    driver.get("http://127.0.0.1:8000")  # Replace with your site URL
+
+    # Step 2: Add a product to the cart
+    product = driver.find_element(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    product.click()
+
+    # Step 3: Wait for cart count to update after adding the product
+    cart_count_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "cart-count"))
+    )
+    initial_cart_count = int(cart_count_element.text) if cart_count_element.text.isdigit() else 0
+
+    # Step 4: Navigate to a different page (e.g., homepage)
+    driver.get("http://127.0.0.1:8000")  # Go to homepage or any other page
+
+    # Step 5: Wait for the page to load
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "product-list"))
+    )
+
+    # Step 6: Navigate back to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 7: Wait for the cart page to load (check for table visibility)
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.TAG_NAME, "table"))
+    )
+
+    # Step 8: Check if the cart count is the same as before navigation
+    cart_count_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "cart-count"))
+    )
+    updated_cart_count = int(cart_count_element.text) if cart_count_element.text.isdigit() else 0
+
+    # Step 9: Verify that the cart count is the same (indicating persistence)
+    assert updated_cart_count == initial_cart_count, f"Expected cart count to be {initial_cart_count}, but found {updated_cart_count}"
+
+    print("Cart is persistent after navigating away from the page.")

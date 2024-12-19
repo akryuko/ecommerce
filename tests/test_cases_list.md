@@ -23,7 +23,7 @@
 16. Verify that the cart updates the item quantity correctly when the quantity is changed.
 17. Verify that an item can be removed from the cart successfully. ✅
 18. Verify that the "Go to Checkout" button works correctly and leads to the checkout page. ✅
-19. Verify that the cart is persistent even if the user navigates away from the page.
+19. Verify that the cart is persistent even if the user navigates away from the page. ✅
 
 ## User Registration and Login Tests
 20. Verify that a user can successfully register with valid details.
