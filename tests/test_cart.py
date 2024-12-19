@@ -79,3 +79,98 @@ def test_cart_total_price(driver):
     assert cart_total_price == total_expected_price, f"Expected total price ${total_expected_price}, but got ${cart_total_price}."
 
 # Test case 16: Verify that the cart updates the item quantity correctly when the quantity is changed.
+
+
+
+
+
+
+
+
+# Test case 17: Verify that an item can be removed from the cart successfully.
+def test_remove_item_from_cart(driver):
+    # Step 1: Navigate to the e-commerce website's homepage
+    driver.get("http://127.0.0.1:8000")  # Replace with your site URL
+
+    # Step 2: Add a product to the cart
+    product = driver.find_element(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    product.click()
+
+    # Step 3: Wait for cart count to update after adding the product
+    cart_count_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "cart-count"))
+    )
+    initial_cart_count = int(cart_count_element.text) if cart_count_element.text.isdigit() else 0
+
+    # Step 4: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 5: Wait for the cart page to load (Check if table is visible)
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.TAG_NAME, "table"))
+    )
+
+    # Step 6: Locate the product remove button within the form
+    remove_button = driver.find_element(By.XPATH, "//form[./button[text()='Remove']]")
+
+    # Step 7: Click the remove button
+    remove_button.click()
+
+    # Step 8: Wait for the cart to update (cart count should decrease)
+    # If the cart is empty, the cart count element might be missing or show a different message
+    try:
+        cart_count_element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "cart-count"))
+        )
+        updated_cart_count = int(cart_count_element.text) if cart_count_element.text.isdigit() else 0
+    except:
+        # If the cart is empty, look for the empty cart message
+        empty_cart_message = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".h4"))
+        )
+        assert "Your cart is empty." in empty_cart_message.text, "Cart is not empty after removal."
+
+    # Step 9: Verify that the product is no longer in the cart (check if the product is not in the table)
+    cart_items = driver.find_elements(By.XPATH, "//td[./button[text()='Remove']]")
+    assert len(cart_items) == 0, "Product was not removed from the cart."
+
+    print("Item successfully removed from the cart.")
+
+
+# Test case 18: Verify that the "Go to Checkout" button works correctly and leads to the checkout page.
+def test_go_to_checkout_button(driver):
+    # Step 1: Navigate to the e-commerce website's homepage
+    driver.get("http://127.0.0.1:8000")  # Replace with your site URL
+
+    # Step 2: Add a product to the cart
+    product = driver.find_element(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    product.click()
+
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 4: Wait for the cart page to load (Check if table is visible)
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.TAG_NAME, "table"))
+    )
+
+    # Step 5: Locate the "Go to Checkout" button
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+
+    # Step 6: Click the "Go to Checkout" button
+    checkout_button.click()
+
+    # Step 7: Wait for the checkout page to load (this could be a unique element in the checkout page)
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/checkout/")
+    )
+    
+    # Step 8: Verify that the user is on the checkout page
+    assert "/checkout/" in driver.current_url, f"Expected to be on checkout page, but found {driver.current_url}"
+
+    print("Successfully redirected to the checkout page.")
