@@ -114,3 +114,64 @@ def test_user_registration_invalid_details(driver):
         EC.presence_of_element_located((By.CSS_SELECTOR, ".errorlist li"))
     )
     assert "A user with that username already exists." in username_error.text
+
+
+# Test case 22: Verify that a user can successfully log in with valid credentials.
+def test_user_login_valid_credentials(driver):
+    # Step 1: Open the Home page
+    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+
+    # Step 2: Click the 'Login' button
+    login_button = driver.find_element(By.LINK_TEXT, "Login")  # Adjust selector if needed
+    login_button.click()
+
+    # Step 3: Verify the Login page is opened
+    assert "/auth/login/" in driver.current_url
+
+    # Step 4: Enter valid login credentials
+    valid_username = "test"  # Replace with an actual valid username
+    valid_password = "user12345"  # Replace with the actual password for the test user
+    driver.find_element(By.ID, "username").send_keys(valid_username)
+    driver.find_element(By.ID, "password").send_keys(valid_password)
+
+    # Step 5: Click the 'Login' button to submit the login form
+    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+
+    # Step 6: Verify the user is redirected to the correct page after login
+    assert "/" in driver.current_url  # Verify Home page URL
+    logout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "button.logout-button"))
+    )
+    assert logout_button.is_displayed()
+
+
+# Test case 23: Verify that a user cannot log in with invalid credentials.
+def test_user_login_invalid_credentials(driver):
+    # Step 1: Open the Home page
+    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+
+    # Step 2: Click the 'Login' button
+    login_button = driver.find_element(By.LINK_TEXT, "Login")  # Adjust selector if needed
+    login_button.click()
+
+    # Step 3: Verify the Login page is opened
+    assert "/auth/login/" in driver.current_url
+
+    # Step 4: Enter invalid login credentials
+    invalid_username = "invaliduser"  # Replace with an invalid username
+    invalid_password = "wrongpassword"  # Replace with an incorrect password
+    driver.find_element(By.ID, "username").send_keys(invalid_username)
+    driver.find_element(By.ID, "password").send_keys(invalid_password)
+
+    # Step 5: Click the 'Login' button to submit the login form
+    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+
+    time.sleep(2)
+
+    # Step 7: Verify the Login page is reloaded and fields are cleared
+    username_field = driver.find_element(By.ID, "username")
+    password_field = driver.find_element(By.ID, "password")
+    assert username_field.text == ""  # Ensure username field is cleared
+    assert password_field.text == ""  # Ensure password field is cleared
+
+
