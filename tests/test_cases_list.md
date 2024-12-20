@@ -26,8 +26,8 @@
 19. Verify that the cart is persistent even if the user navigates away from the page. ✅
 
 ## User Registration and Login Tests
-20. Verify that a user can successfully register with valid details.
-21. Verify that a user cannot register with invalid details (e.g., missing fields, invalid email format).
+20. Verify that a user can successfully register with valid details. ✅
+21. Verify that a user cannot register with invalid details (e.g., missing fields, invalid format, existing username). ✅
 22. Verify that a user can successfully log in with valid credentials.
 23. Verify that a user cannot log in with invalid credentials.
 24. Verify that the login page displays appropriate error messages for failed login attempts.
