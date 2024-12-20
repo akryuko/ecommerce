@@ -175,3 +175,47 @@ def test_user_login_invalid_credentials(driver):
     assert password_field.text == ""  # Ensure password field is cleared
 
 
+# Test case 24: 
+def test_user_logout(driver):
+    # Step 1: Open the Home page
+    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+
+    # Step 2: Click the 'Login' button
+    login_button = driver.find_element(By.LINK_TEXT, "Login")  # Adjust selector if needed
+    login_button.click()
+
+    # Step 3: Verify the Login page is opened
+    assert "/auth/login/" in driver.current_url
+
+    # Step 4: Enter valid login credentials
+    valid_username = "test"  # Replace with an actual valid username
+    valid_password = "user12345"  # Replace with the actual password for the test user
+    driver.find_element(By.ID, "username").send_keys(valid_username)
+    driver.find_element(By.ID, "password").send_keys(valid_password)
+
+    # Step 5: Click the 'Login' button to submit the login form
+    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+
+    # Step 6: Ensure that the user is logged in
+    # This can be done by checking the presence of the logout button (or other indicators)
+    logout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "button.logout-button"))
+    )
+    assert logout_button.is_displayed()  # Ensure the user is logged in and logout button is present
+
+    # Step 7: Click the 'Logout' button
+    logout_button.click()
+
+    # Step 8: Wait for the Home page to refresh (based on the assumption that the page reloads)
+    WebDriverWait(driver, 10).until(
+        EC.staleness_of(logout_button)  # Wait until the logout button is no longer attached (indicating page refresh)
+    )
+
+    # Step 9: Verify that the Home page is refreshed and the 'Login' button is displayed
+    login_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.LINK_TEXT, "Login"))
+    )
+    assert login_button.is_displayed()  # Ensure the 'Login' button is visible on the page
+
+
+

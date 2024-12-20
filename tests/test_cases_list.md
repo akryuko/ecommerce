@@ -31,7 +31,7 @@
 22. Verify that a user can successfully log in with valid credentials. ✅
 23. Verify that a user cannot log in with invalid credentials.✅ 
 24. Verify that the login page displays appropriate error messages for failed login attempts.
-25. Verify that the user can log out successfully and is redirected to the homepage or login page.
+25. Verify that the user can log out successfully and is redirected to the homepage or login page. ✅ 
 
 ## Checkout Process Tests
 26. Verify that the checkout page loads correctly.
