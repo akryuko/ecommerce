@@ -241,3 +241,130 @@ def test_select_payment_method(driver):
     
     print("Successfully selected a payment method and verified the selection.")
 
+
+# Test case 30: Verify that the user can complete the purchase and navigates to Order success page.
+def test_complete_purchase(driver):
+    fake = Faker()
+    
+    # Step 1: Generate fake data
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    phone = fake.phone_number()
+    street_address = fake.street_address()
+    city = fake.city()
+    state = fake.state()
+    postal_code = fake.postcode()
+
+    driver.get("http://127.0.0.1:8000")  # Replace with your site URL
+
+    # Step 2: Add multiple products to the cart
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    for product in products[:3]:  # Add first three products (or adjust as needed)
+        product.click()
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+    
+    # Step 4: Navigate to the Checkout page
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+    checkout_button.click()
+
+    # Step 5: Fill in the Contact Information
+    driver.find_element(By.ID, "first_name").send_keys(first_name)
+    driver.find_element(By.ID, "last_name").send_keys(last_name)
+    driver.find_element(By.ID, "email").send_keys(email)
+    driver.find_element(By.ID, "phone").send_keys(phone)
+    
+    time.sleep(2)
+
+    # Step 6: Fill in the Shipping Address
+    driver.find_element(By.ID, "address").send_keys(street_address)
+    driver.find_element(By.ID, "city").send_keys(city)
+    driver.find_element(By.ID, "state").send_keys(state)
+    driver.find_element(By.ID, "postal_code").send_keys(postal_code)
+        
+    # Step 7: Select Payment Method (Credit Card or PayPal)
+    driver.find_element(By.ID, "credit_card").click()  # Example: Selecting Credit Card
+    time.sleep(1)  # Wait for the selection to register
+    
+    # Step 8: Click on the Place Order button to complete the purchase
+    place_order_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-success.mt-4")
+    place_order_button.click()
+
+
+    # Step 9: Verify that the user is redirected to the Order Success page
+    assert "Order Success" in driver.page_source  # Check if "Order Success" is in the page title or body
+
+    print("Successfully completed the purchase and navigated to the Order Success page.")
+
+
+# Test case 31: Verify that the user can continue shopping after checkout.
+def test_continue_shopping_after_checkout(driver):
+    fake = Faker()
+    
+    # Step 1: Generate fake data
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    phone = fake.phone_number()
+    street_address = fake.street_address()
+    city = fake.city()
+    state = fake.state()
+    postal_code = fake.postcode()
+
+    driver.get("http://127.0.0.1:8000")  # Replace with your site URL
+
+    # Step 2: Add multiple products to the cart
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    for product in products[:3]:  # Add first three products (or adjust as needed)
+        product.click()
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+    
+    # Step 4: Navigate to the Checkout page
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+    checkout_button.click()
+
+    # Step 5: Fill in the Contact Information
+    driver.find_element(By.ID, "first_name").send_keys(first_name)
+    driver.find_element(By.ID, "last_name").send_keys(last_name)
+    driver.find_element(By.ID, "email").send_keys(email)
+    driver.find_element(By.ID, "phone").send_keys(phone)
+    
+    time.sleep(2)
+
+    # Step 6: Fill in the Shipping Address
+    driver.find_element(By.ID, "address").send_keys(street_address)
+    driver.find_element(By.ID, "city").send_keys(city)
+    driver.find_element(By.ID, "state").send_keys(state)
+    driver.find_element(By.ID, "postal_code").send_keys(postal_code)
+        
+    # Step 7: Select Payment Method (Credit Card or PayPal)
+    driver.find_element(By.ID, "credit_card").click()  # Example: Selecting Credit Card
+    time.sleep(1)  # Wait for the selection to register
+    
+    # Step 8: Click on the Place Order button to complete the purchase
+    place_order_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-success.mt-4")
+    place_order_button.click()
+
+    # Step 11: Click the "Return to Home" button
+    return_to_home_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-primary.mt-3")
+    return_to_home_button.click()
+
+    # Step 12: Verify that the user is redirected to the home page
+    WebDriverWait(driver, 10).until(
+        EC.url_to_be("http://127.0.0.1:8000/")  # Replace with your actual home page URL
+    )
+    assert driver.current_url == "http://127.0.0.1:8000/"  # Adjust as needed for the actual home page URL
+
+    print("Successfully completed the purchase and returned to the home page.")
+
+

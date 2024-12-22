@@ -38,8 +38,8 @@
 27. Verify that the order summary displays the correct items, quantities, and total price. ✅ 
 28. Verify that the user can enter contact and shipping information. ✅
 29. Verify that the user can select a payment method (Credit card / Paypal). ✅
-30. Verify that the user can complete the purchase and receives an order confirmation.
-31. Verify that the user can continue shopping after checkout.
+30. Verify that the user can complete the purchase and navigates to Order success page. ✅
+31. Verify that the user can continue shopping after checkout. ✅
 
 ## Order Success / Confirmation Page Tests
 32. Verify that the order confirmation page displays the correct order details, such as items, billing, shipping address, and payment method.
