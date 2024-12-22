@@ -17,7 +17,7 @@
 12. Verify the "Add to Cart" button works on the product page. ✅
 13. Verify the "Back" and "Go to Cart" buttons work on the product page. ✅
 
-## Cart Functionality Tests
+## Cart Functionality Tests (test_cart.py)
 14. Verify that products can be added to the cart successfully. ✅
 15. Verify that the cart displays the correct total price after items are added. ✅
 16. Verify that the cart updates the item quantity correctly when the quantity is changed.
@@ -25,7 +25,7 @@
 18. Verify that the "Go to Checkout" button works correctly and leads to the checkout page. ✅
 19. Verify that the cart is persistent even if the user navigates away from the page. ✅
 
-## User Registration and Login Tests
+## User Registration and Login Tests (test_login.py)
 20. Verify that a user can successfully register with valid details. ✅
 21. Verify that a user cannot register with invalid details (e.g., missing fields, invalid format, existing username). ✅
 22. Verify that a user can successfully log in with valid credentials. ✅
@@ -33,7 +33,7 @@
 24. Verify that the login page displays appropriate error messages for failed login attempts.
 25. Verify that the user can log out successfully and is redirected to the homepage or login page. ✅ 
 
-## Checkout Process Tests
+## Checkout Process Tests (test_checkout.py)
 26. Verify that the checkout page loads correctly. ✅ 
 27. Verify that the order summary displays the correct items, quantities, and total price. ✅ 
 28. Verify that the user can enter contact and shipping information. ✅
@@ -41,14 +41,14 @@
 30. Verify that the user can complete the purchase and navigates to Order success page. ✅
 31. Verify that the user can continue shopping after checkout. ✅
 
-## Order Success page Tests
+## Order Success page Tests (test_checkout.py)
 32. Verify that the order success page displays the correct order details, such as items, billing, shipping address, and payment method. ✅
 33. Verify that the "Return to Home" button works and redirects to the homepage. ✅
 34. Verify that an order confirmation email is sent to the user after a successful purchase.
 
 ## Guest Checkout Tests
-35. Verify that a guest user can proceed to checkout without registering or logging in.
-36. Verify that the user is prompted to create an account after completing a guest checkout.
+35. Verify that a guest user can proceed to checkout without registering or logging in. ✅
+36. Verify that the user is prompted to create an account or register after completing a guest checkout. ✅
 37. Verify that the guest order is linked to the guest user, allowing tracking of the order.
 
 ## Security and Session Tests

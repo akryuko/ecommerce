@@ -614,3 +614,166 @@ def test_return_home(driver):
     )
     assert driver.current_url == "http://localhost:8000/"  # Verify the homepage URL
 
+
+# Test case 35: Verify that a guest user can proceed to checkout without registering or logging in.
+def test_guest_checkout(driver):
+    fake = Faker()
+
+    # Step 1: Navigate to the home page
+    driver.get("http://localhost:8000")  # Replace with your actual Home page URL
+
+    # Step 2: Add products to the cart
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    added_product_names = []
+    for product in products[:5]:  # Add first two products (or adjust as needed)
+        try:
+            product_name = product.find_element(By.XPATH, ".//ancestor::div[@class='product-card']//h3").text.strip()
+            added_product_names.append(product_name)
+            product.click()
+        except NoSuchElementException as e:
+            print(f"Product name not found for this product: {e}")
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 4: Navigate to the Checkout page
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+    checkout_button.click()
+
+    # Step 5: Fill in the Contact Information (no login required)
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    phone = fake.phone_number()
+    street_address = fake.street_address()
+    city = fake.city()
+    state = fake.state()
+    postal_code = fake.postcode()
+
+    driver.find_element(By.ID, "first_name").send_keys(first_name)
+    driver.find_element(By.ID, "last_name").send_keys(last_name)
+    driver.find_element(By.ID, "email").send_keys(email)
+    driver.find_element(By.ID, "phone").send_keys(phone)
+
+    # Step 6: Fill in the Shipping Address
+    driver.find_element(By.ID, "address").send_keys(street_address)
+    driver.find_element(By.ID, "city").send_keys(city)
+    driver.find_element(By.ID, "state").send_keys(state)
+    driver.find_element(By.ID, "postal_code").send_keys(postal_code)
+
+    # Step 7: Select Payment Method (Credit Card or PayPal)
+    payment_methods = ["paypal", "credit_card"]  # Assuming the ID for PayPal and Credit Card are 'paypal' and 'credit_card'
+    selected_payment_method_id = random.choice(payment_methods)  # Randomly choose between 'paypal' and 'credit_card'
+
+    if selected_payment_method_id == "paypal":
+        driver.find_element(By.ID, "paypal").click()  # Select PayPal
+    elif selected_payment_method_id == "credit_card":
+        driver.find_element(By.ID, "credit_card").click()  # Select Credit Card
+
+    # Step 8: Click on the Place Order button to complete the purchase
+    place_order_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-success.mt-4")
+    place_order_button.click()
+
+    # Step 9: Verify the Order Success message
+    success_message = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//h1[contains(text(), 'Order Placed Successfully!')]"))
+    )
+    assert success_message.is_displayed()
+
+# Test case 36: Verify that the user is prompted to create an account or register after completing a guest checkout.
+def test_guest_checkout_prompt_to_create_account_or_login(driver):
+    fake = Faker()
+
+    # Step 1: Navigate to the home page
+    driver.get("http://localhost:8000")  # Replace with your actual Home page URL
+
+    # Step 2: Add products to the cart
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    added_product_names = []
+    for product in products[:2]:  # Add first two products (or adjust as needed)
+        try:
+            product_name = product.find_element(By.XPATH, ".//ancestor::div[@class='product-card']//h3").text.strip()
+            added_product_names.append(product_name)
+            product.click()
+        except NoSuchElementException as e:
+            print(f"Product name not found for this product: {e}")
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 4: Navigate to the Checkout page
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+    checkout_button.click()
+
+    # Step 5: Fill in the Contact Information (no login required)
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    phone = fake.phone_number()
+    street_address = fake.street_address()
+    city = fake.city()
+    state = fake.state()
+    postal_code = fake.postcode()
+
+    driver.find_element(By.ID, "first_name").send_keys(first_name)
+    driver.find_element(By.ID, "last_name").send_keys(last_name)
+    driver.find_element(By.ID, "email").send_keys(email)
+    driver.find_element(By.ID, "phone").send_keys(phone)
+
+    # Step 6: Fill in the Shipping Address
+    driver.find_element(By.ID, "address").send_keys(street_address)
+    driver.find_element(By.ID, "city").send_keys(city)
+    driver.find_element(By.ID, "state").send_keys(state)
+    driver.find_element(By.ID, "postal_code").send_keys(postal_code)
+
+    # Step 7: Select Payment Method (Credit Card or PayPal)
+    payment_methods = ["paypal", "credit_card"]  # Assuming the ID for PayPal and Credit Card are 'paypal' and 'credit_card'
+    selected_payment_method_id = random.choice(payment_methods)  # Randomly choose between 'paypal' and 'credit_card'
+
+    if selected_payment_method_id == "paypal":
+        driver.find_element(By.ID, "paypal").click()  # Select PayPal
+    elif selected_payment_method_id == "credit_card":
+        driver.find_element(By.ID, "credit_card").click()  # Select Credit Card
+
+    # Step 8: Click on the Place Order button to complete the purchase
+    place_order_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-success.mt-4")
+    place_order_button.click()
+
+    # Step 9: Verify the Order Success message
+    success_message = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//h1[contains(text(), 'Order Placed Successfully!')]"))
+    )
+    assert success_message.is_displayed()
+
+    # Step 10: Verify that the user is prompted to create an account or log in
+    # Check for "Create Account" button
+    create_account_button = driver.find_element(By.CSS_SELECTOR, ".btn-create-account")
+    assert create_account_button.is_displayed(), "'Create Account' button not found"
+
+    # Check for "Login" link
+    login_link = driver.find_element(By.CSS_SELECTOR, ".btn-login")
+    assert login_link.is_displayed(), "'Login' link not found"
+
+    # Step 11: Click on "Create Account" and verify redirection to the registration page
+    create_account_button.click()
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/register/")  # Check if redirected to registration page
+    )
+    assert "/register/" in driver.current_url, "Failed to redirect to registration page after clicking 'Create Account'"
+
+    # Step 12: Go back to the Order Success page using the browser's back action
+    driver.back()
+
+    # Step 13: Click on "Log in here" and verify redirection to the login page
+    login_link.click()
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/auth/login/")  # Check if redirected to login page
+    )
+    assert "/auth/login/" in driver.current_url, "Failed to redirect to login page after clicking 'Log in here'"
+
