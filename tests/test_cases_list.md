@@ -34,8 +34,8 @@
 25. Verify that the user can log out successfully and is redirected to the homepage or login page. ✅ 
 
 ## Checkout Process Tests
-26. Verify that the checkout page loads correctly.
-27. Verify that the order summary displays the correct items, quantities, and total price.
+26. Verify that the checkout page loads correctly. ✅ 
+27. Verify that the order summary displays the correct items, quantities, and total price. ✅ 
 28. Verify that the user can enter billing and shipping information.
 29. Verify that the user can select a payment method (e.g., Credit/Debit card).
 30. Verify that the user can complete the purchase and receives an order confirmation.
