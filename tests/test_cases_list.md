@@ -41,9 +41,9 @@
 30. Verify that the user can complete the purchase and navigates to Order success page. ✅
 31. Verify that the user can continue shopping after checkout. ✅
 
-## Order Success / Confirmation Page Tests
-32. Verify that the order confirmation page displays the correct order details, such as items, billing, shipping address, and payment method.
-33. Verify that the "Return to Home" button works and redirects to the homepage.
+## Order Success page Tests
+32. Verify that the order success page displays the correct order details, such as items, billing, shipping address, and payment method. ✅
+33. Verify that the "Return to Home" button works and redirects to the homepage. ✅
 34. Verify that an order confirmation email is sent to the user after a successful purchase.
 
 ## Guest Checkout Tests

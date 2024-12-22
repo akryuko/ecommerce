@@ -4,6 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from faker import Faker
 import time
+import random
+from selenium.common.exceptions import NoSuchElementException
 
 
 # Test case 26: Verify that the checkout page loads correctly.
@@ -367,4 +369,248 @@ def test_continue_shopping_after_checkout(driver):
 
     print("Successfully completed the purchase and returned to the home page.")
 
+# Test case 32: Verify that the order success page displays the correct order details, such as items, billing, shipping address, and payment method. 
+def test_order_success_page_with_logged_in_user(driver):
+    fake = Faker()
+
+    # Step 1: Log in the user
+    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+    login_button = driver.find_element(By.LINK_TEXT, "Login")
+    login_button.click()
+
+    assert "/auth/login/" in driver.current_url
+
+    valid_username = "test"  # Replace with an actual valid username
+    valid_password = "user12345"  # Replace with the actual password for the test user
+    driver.find_element(By.ID, "username").send_keys(valid_username)
+    driver.find_element(By.ID, "password").send_keys(valid_password)
+    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+
+    assert "/" in driver.current_url  # Verify Home page URL
+    logout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "button.logout-button"))
+    )
+    assert logout_button.is_displayed()
+
+    # Step 2: Add multiple products to the cart
+    driver.get("http://localhost:8000")  # Navigate to home page again
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    added_product_names = []
+    for product in products[:2]:  # Add first two products (or adjust as needed)
+        try:
+            product_name = product.find_element(By.XPATH, ".//ancestor::div[@class='product-card']//h3").text.strip()  # Get product name from card
+            added_product_names.append(product_name)
+            product.click()
+        except NoSuchElementException as e:
+            print(f"Product name not found for this product: {e}")
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 4: Navigate to the Checkout page
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+    checkout_button.click()
+
+    # Step 5: Fill in the Contact Information
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    phone = fake.phone_number()
+    street_address = fake.street_address()
+    city = fake.city()
+    state = fake.state()
+    postal_code = fake.postcode()
+
+    driver.find_element(By.ID, "first_name").send_keys(first_name)
+    driver.find_element(By.ID, "last_name").send_keys(last_name)
+    driver.find_element(By.ID, "email").send_keys(email)
+    driver.find_element(By.ID, "phone").send_keys(phone)
+
+    # Step 6: Fill in the Shipping Address
+    driver.find_element(By.ID, "address").send_keys(street_address)
+    driver.find_element(By.ID, "city").send_keys(city)
+    driver.find_element(By.ID, "state").send_keys(state)
+    driver.find_element(By.ID, "postal_code").send_keys(postal_code)
+
+    # Step 7: Select Payment Method (Credit Card or PayPal)
+    payment_methods = ["paypal", "credit_card"]  # Assuming the ID for PayPal and Credit Card are 'paypal' and 'credit_card'
+    selected_payment_method_id = random.choice(payment_methods)  # Randomly choose between 'paypal' and 'credit_card'
+
+    if selected_payment_method_id == "paypal":
+        driver.find_element(By.ID, "paypal").click()  # Select PayPal
+    elif selected_payment_method_id == "credit_card":
+        driver.find_element(By.ID, "credit_card").click()  # Select Credit Card
+
+    # Map internal IDs to UI names
+    payment_method_ui_mapping = {
+        "paypal": "PayPal",
+        "credit_card": "Credit Card"
+    }
+
+    # Get the UI name for the selected payment method
+    selected_payment_method_ui = payment_method_ui_mapping[selected_payment_method_id]
+
+
+    # Step 8: Click on the Place Order button to complete the purchase
+    place_order_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-success.mt-4")
+    place_order_button.click()
+
+    # Step 9: Wait for the Order Success page to load
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/order-success/")  # Adjust this based on the actual success page URL
+    )
+
+    # Step 10: Wait for the order success message to appear on the page
+    success_message = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//h1[contains(text(), 'Order Placed Successfully!')]"))
+    )
+    assert success_message.is_displayed()
+
+    # Step 11: Verify the correct full text (including name) appears in the message
+    expected_full_text = f"Thank you for placing your order, {first_name} {last_name}."
+    actual_full_text = driver.find_element(By.CSS_SELECTOR, "p").text.strip()  # Get the full text of the paragraph
+    assert expected_full_text == actual_full_text, f"Expected text '{expected_full_text}' not found. Actual text: '{actual_full_text}'"
+
+    # Step 12: Verify that the products in the order summary match the order
+    order_table_rows = driver.find_elements(By.CSS_SELECTOR, ".table tbody tr")
+    for i, row in enumerate(order_table_rows):
+        product_name = row.find_element(By.CSS_SELECTOR, "td:nth-child(1)").text.strip()
+        assert product_name == added_product_names[i], f"Expected product name '{added_product_names[i]}', but got '{product_name}'"
+
+    # Step 13: Verify that the Total price matches the sum of the products' total prices
+    # Extract product prices from the table (assuming price is in the 4th column, i.e., "td" in the row)
+    product_prices = driver.find_elements(By.XPATH, "//table[@class='table']//tbody//tr//td[4]")
+    total_price = sum(float(price.text.strip().replace('$', '')) for price in product_prices)
+
+    # Extract the displayed total price
+    total_price_text = driver.find_element(By.CSS_SELECTOR, "h4.text-right").text.strip()
+    # Extract numeric value from the total price text
+    displayed_total_price = float(total_price_text.replace("Total: $", ""))
+
+    # Verify that the calculated total price matches the displayed total price
+    assert abs(total_price - displayed_total_price) < 0.01, f"Expected total price '{total_price:.2f}', but got '{displayed_total_price:.2f}'"
+
+
+    # Step 14: Verify the shipping address
+    shipping_address = driver.find_element(By.XPATH, "//p[strong[text()='Address:']]").text.strip()
+    expected_address = f"Address: {street_address}, {city}, {state} - {postal_code}"
+    assert shipping_address == expected_address, f"Expected address '{expected_address}', but got '{shipping_address}'"
+
+    # Step 15: Verify the phone number
+    phone_number = driver.find_element(By.XPATH, "//p[strong[text()='Phone:']]").text.strip()
+    assert phone_number == f"Phone: {phone}", f"Expected phone number '{phone}', but got '{phone_number}'"
+
+    # Step 16: Verify the payment method
+    payment_method = driver.find_element(By.XPATH, "//h3[text()='Payment Method:']/following-sibling::p").text.strip()
+    assert payment_method.title() ==  selected_payment_method_ui.title(), f"Expected payment method '{ selected_payment_method_ui.capitalize()}', but got '{payment_method}'"
+
+
+# Test case 33: Verify that the "Return to Home" button works and redirects to the homepage.
+def test_return_home(driver):
+    fake = Faker()
+
+    # Step 1: Log in the user
+    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+    login_button = driver.find_element(By.LINK_TEXT, "Login")
+    login_button.click()
+
+    assert "/auth/login/" in driver.current_url
+
+    valid_username = "test"  # Replace with an actual valid username
+    valid_password = "user12345"  # Replace with the actual password for the test user
+    driver.find_element(By.ID, "username").send_keys(valid_username)
+    driver.find_element(By.ID, "password").send_keys(valid_password)
+    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+
+    assert "/" in driver.current_url  # Verify Home page URL
+    logout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "button.logout-button"))
+    )
+    assert logout_button.is_displayed()
+
+    # Step 2: Add multiple products to the cart
+    driver.get("http://localhost:8000")  # Navigate to home page again
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    added_product_names = []
+    for product in products[:2]:  # Add first two products (or adjust as needed)
+        try:
+            product_name = product.find_element(By.XPATH, ".//ancestor::div[@class='product-card']//h3").text.strip()  # Get product name from card
+            added_product_names.append(product_name)
+            product.click()
+        except NoSuchElementException as e:
+            print(f"Product name not found for this product: {e}")
+
+    # Step 3: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Step 4: Navigate to the Checkout page
+    checkout_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//a[@href='/checkout/']"))
+    )
+    checkout_button.click()
+
+    # Step 5: Fill in the Contact Information
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    phone = fake.phone_number()
+    street_address = fake.street_address()
+    city = fake.city()
+    state = fake.state()
+    postal_code = fake.postcode()
+
+    driver.find_element(By.ID, "first_name").send_keys(first_name)
+    driver.find_element(By.ID, "last_name").send_keys(last_name)
+    driver.find_element(By.ID, "email").send_keys(email)
+    driver.find_element(By.ID, "phone").send_keys(phone)
+
+    # Step 6: Fill in the Shipping Address
+    driver.find_element(By.ID, "address").send_keys(street_address)
+    driver.find_element(By.ID, "city").send_keys(city)
+    driver.find_element(By.ID, "state").send_keys(state)
+    driver.find_element(By.ID, "postal_code").send_keys(postal_code)
+
+    # Step 7: Select Payment Method (Credit Card or PayPal)
+    payment_methods = ["paypal", "credit_card"]  # Assuming the ID for PayPal and Credit Card are 'paypal' and 'credit_card'
+    selected_payment_method_id = random.choice(payment_methods)  # Randomly choose between 'paypal' and 'credit_card'
+
+    if selected_payment_method_id == "paypal":
+        driver.find_element(By.ID, "paypal").click()  # Select PayPal
+    elif selected_payment_method_id == "credit_card":
+        driver.find_element(By.ID, "credit_card").click()  # Select Credit Card
+
+    # Map internal IDs to UI names
+    payment_method_ui_mapping = {
+        "paypal": "PayPal",
+        "credit_card": "Credit Card"
+    }
+
+    # Step 8: Click on the Place Order button to complete the purchase
+    place_order_button = driver.find_element(By.CSS_SELECTOR, ".btn.btn-success.mt-4")
+    place_order_button.click()
+
+    # Step 9: Wait for the Order Success page to load
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/order-success/")  # Adjust this based on the actual success page URL
+    )
+
+    # Step 10: Wait for the order success message to appear on the page
+    success_message = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//h1[contains(text(), 'Order Placed Successfully!')]"))
+    )
+    assert success_message.is_displayed()
+
+    # Step 11: Click the "Return to Home" button and verify redirection
+    return_to_home_button = driver.find_element(By.CSS_SELECTOR, "a.btn.btn-primary.mt-3")  # Locate the button
+    return_to_home_button.click()
+
+    # Step 12: Verify that the user is redirected to the homepage
+    WebDriverWait(driver, 10).until(
+        EC.url_to_be("http://localhost:8000/")  # Replace with your actual homepage URL
+    )
+    assert driver.current_url == "http://localhost:8000/"  # Verify the homepage URL
 
