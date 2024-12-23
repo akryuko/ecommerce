@@ -118,26 +118,13 @@ def test_user_registration_invalid_details(driver):
 
 # Test case 22: Verify that a user can successfully log in with valid credentials.
 def test_user_login_valid_credentials(driver):
-    # Step 1: Open the Home page
-    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+    from helpers import login_user
 
-    # Step 2: Click the 'Login' button
-    login_button = driver.find_element(By.LINK_TEXT, "Login")  # Adjust selector if needed
-    login_button.click()
+    # Use the helper function for login
+    login_user(driver, username="test", password="user12345")
+    logout_button = driver.find_element(By.CSS_SELECTOR, "button.logout-button")
 
-    # Step 3: Verify the Login page is opened
-    assert "/auth/login/" in driver.current_url
-
-    # Step 4: Enter valid login credentials
-    valid_username = "test"  # Replace with an actual valid username
-    valid_password = "user12345"  # Replace with the actual password for the test user
-    driver.find_element(By.ID, "username").send_keys(valid_username)
-    driver.find_element(By.ID, "password").send_keys(valid_password)
-
-    # Step 5: Click the 'Login' button to submit the login form
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
-
-    # Step 6: Verify the user is redirected to the correct page after login
+    # Verify the user is redirected to the correct page after login
     assert "/" in driver.current_url  # Verify Home page URL
     logout_button = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "button.logout-button"))

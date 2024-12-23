@@ -52,8 +52,8 @@
 37. Verify that the guest order is linked to the guest user, allowing tracking of the order.
 
 ## Security and Session Tests
-38. Verify that the session is maintained during navigation between pages for logged-in users.
-39. Verify that sensitive data (like passwords) is securely handled during login and registration.
+38. Verify that the session is maintained during navigation between pages for logged-in users. ✅
+39. Verify that sensitive data (like passwords) is securely handled during login and registration. ✅
 40. Verify that users are logged out after a period of inactivity.
 41. Verify that the "Forgot Password" functionality works correctly.
 
