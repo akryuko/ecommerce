@@ -46,7 +46,7 @@
 33. Verify that the "Return to Home" button works and redirects to the homepage. ✅
 34. Verify that an order confirmation email is sent to the user after a successful purchase.
 
-## Guest Checkout Tests
+## Guest Checkout Tests (test_checkout.py)
 35. Verify that a guest user can proceed to checkout without registering or logging in. ✅
 36. Verify that the user is prompted to create an account or register after completing a guest checkout. ✅
 37. Verify that the guest order is linked to the guest user, allowing tracking of the order.
