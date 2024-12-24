@@ -60,8 +60,8 @@
 ## Responsive Design and UI Tests (test_ui.py)
 42. Verify that the website is responsive on different screen sizes (desktop, tablet, mobile). ✅
 43. Verify that the header and footer are correctly displayed across all pages. ✅
-44. Verify that product images are displayed properly on all devices.
-45. Verify that the "Add to Cart" button is functional on mobile devices.
+44. Verify that product images are displayed properly on all devices. ✅
+45. Verify that the "Add to Cart" button is functional on mobile devices. ✅
 
 ## Miscellaneous Tests
 46. Verify the presence of legal pages such as Terms and Conditions, Privacy Policy, and FAQ.

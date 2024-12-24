@@ -1,9 +1,9 @@
+import time
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import random
 
-
-# Test case 42: Verify that the website is responsive on different screen sizes (desktop, tablet, mobile).
 # Define screen sizes for responsiveness testing
 SCREEN_SIZES = {
     "desktop": (1920, 1080),
@@ -11,6 +11,7 @@ SCREEN_SIZES = {
     "mobile": (375, 667),
 }
 
+# Test case 42: Verify that the website is responsive on different screen sizes (desktop, tablet, mobile).
 @pytest.mark.parametrize("device, size", SCREEN_SIZES.items())
 def test_elements_visibility(driver, device, size):
     """Verify required elements are visible on all screen sizes."""
@@ -104,3 +105,65 @@ def test_header_and_footer(driver, page):
         f"Footer copyright text should be correct on page: {page}"
 
  
+ # Test case 44: Verify that product images are displayed properly on all devices.
+@pytest.mark.parametrize("device, size", SCREEN_SIZES.items())
+def test_product_images_displayed(driver, device, size):
+    """Verify product images are displayed properly on all devices."""
+    base_url = "http://127.0.0.1:8000"  # Replace with your base URL
+    driver.set_window_size(size[0], size[1])  # Set the browser window size
+    driver.get(base_url + "/")  # Navigate to the product listing page
+
+    # Find all product images
+    product_images = driver.find_elements(By.CSS_SELECTOR, ".product-image")
+    assert len(product_images) > 0, "No product images found on the page."
+
+    for image in product_images:
+        # Check if the image is displayed
+        assert image.is_displayed(), f"Product image not displayed: {image.get_attribute('alt')}"
+
+        # Optional: Check that the image source is not empty
+        src = image.get_attribute("src")
+        assert src, f"Product image source (src) is empty: {image.get_attribute('alt')}"
+
+
+# Test case 45: Verify that the "Add to Cart" button is functional on mobile devices.
+# Define mobile screen size
+MOBILE_SCREEN_SIZE = (375, 667)
+
+def test_add_to_cart_on_mobile(driver):
+    """
+    Verify that the "Add to Cart" button is functional on mobile devices.
+    """
+    # Set the window size for mobile devices
+    driver.set_window_size(MOBILE_SCREEN_SIZE[0], MOBILE_SCREEN_SIZE[1])
+
+    # Step 1: Navigate to the e-commerce website's homepage
+    driver.get("http://127.0.0.1:8000")
+
+    # Step 2: Locate all "Add to Cart" buttons on the page
+    products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")
+    assert len(products) > 0, "No products found on the homepage."
+
+    # Step 3: Randomly select 1 to 3 products to add to the cart
+    num_products_to_add = random.randint(1, 3)
+    selected_products = random.sample(products, num_products_to_add)
+
+    for product in selected_products:
+        product.click()
+
+    # Step 4: Navigate to the Cart page
+    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
+    cart_link.click()
+
+    # Expected Results: Verify that the correct number of products appears in the cart
+    cart_items = driver.find_elements(By.CSS_SELECTOR, "table.table-bordered tbody tr")
+    assert len(cart_items) == num_products_to_add, (
+        f"Expected {num_products_to_add} items in the cart, but found {len(cart_items)}."
+    )
+
+    # Verify each product's details in the cart
+    for i, cart_item in enumerate(cart_items, start=1):
+        product_name = cart_item.find_element(By.CSS_SELECTOR, "td:first-child").text
+        product_quantity = cart_item.find_element(By.CSS_SELECTOR, "td:nth-child(4) span").text
+        assert product_quantity == "1", f"Product {i} quantity in cart is incorrect."
+        print(f"Product {i}: {product_name} added successfully with quantity {product_quantity}.")
