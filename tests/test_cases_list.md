@@ -51,15 +51,15 @@
 36. Verify that the user is prompted to create an account or register after completing a guest checkout. ✅
 37. Verify that the guest order is linked to the guest user, allowing tracking of the order.
 
-## Security and Session Tests
+## Security and Session Tests (test_security.py)
 38. Verify that the session is maintained during navigation between pages for logged-in users. ✅
 39. Verify that sensitive data (like passwords) is securely handled during login and registration. ✅
 40. Verify that users are logged out after a period of inactivity. ✅
 41. Verify that the "Forgot Password" functionality works correctly.
 
-## Responsive Design and UI Tests
-42. Verify that the website is responsive on different screen sizes (desktop, tablet, mobile).
-43. Verify that the header and footer are correctly displayed across all pages.
+## Responsive Design and UI Tests (test_ui.py)
+42. Verify that the website is responsive on different screen sizes (desktop, tablet, mobile). ✅
+43. Verify that the header and footer are correctly displayed across all pages. ✅
 44. Verify that product images are displayed properly on all devices.
 45. Verify that the "Add to Cart" button is functional on mobile devices.
 
