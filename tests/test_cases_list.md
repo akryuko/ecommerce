@@ -66,5 +66,5 @@
 ## Miscellaneous Tests (test_miscellaneous.py)
 46. Verify the presence of legal pages such as Terms and Conditions, Privacy Policy, and FAQ. ✅
 47. Verify that social media links in the footer work correctly. ✅
-48. Verify that the website displays a "404 Page Not Found" message for non-existent URLs.
-49. Verify that the "Back to Home" button works on all pages.
+48. Verify that the website displays a "404 Page Not Found" message for non-existent URLs. ✅
+49. Verify that the "Back to Home" button works on all pages. ✅

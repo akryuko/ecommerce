@@ -2,6 +2,11 @@ import time
 import pytest
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import requests
+
 
 # Test case 46: Verify the presence of legal pages such as Terms and Conditions, Privacy Policy, and FAQ.
 def test_legal_pages_present(driver):
@@ -97,3 +102,47 @@ def test_social_media_links(driver):
         # Close the new tab and switch back to the main window
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
+
+# Test case 48: Verify that the website displays a "404 Page Not Found" message for non-existent URLs.
+def test_404_page_not_found():
+    """
+    Verify that the website returns a 404 status code for non-existent URLs.
+    """
+    # Define the non-existent URL
+    non_existent_url = "http://127.0.0.1:8000/non-existent-page/"
+
+    # Make a GET request to the non-existent URL
+    response = requests.get(non_existent_url)
+
+    # Verify that the response status code is 404
+    assert response.status_code == 404, f"Expected 404, but got {response.status_code}."
+
+# Test case 49: Verify that the "Back to Home" button works on all pages. 
+@pytest.mark.parametrize("url", [
+    "/",               # Homepage
+    "/cart/",          # Cart page
+    "/product_detail/1/",  # Product detail page (example, you can parameterize for all products)
+    "/faq/",           # FAQ page
+    "/about/",         # About Us page
+    "/terms/",         # Terms and Conditions page
+])
+def test_back_to_home_button(driver, url):
+    """
+    Verify that the 'Back to Home' button works correctly on all pages.
+    """
+    # Step 1: Navigate to the specified page
+    driver.get(f"http://127.0.0.1:8000{url}")
+
+    # Step 2: Find the 'Back to Home' button (assumed to be a link or button)
+    try:
+        back_to_home_button = driver.find_element(By.CSS_SELECTOR, "a[href='/']")
+    except:
+        pytest.fail("'Back to Home' button/link not found.")
+
+    # Step 3: Click the 'Back to Home' button
+    back_to_home_button.click()
+
+    # Step 4: Verify that the page has redirected to the homepage
+    assert driver.current_url == "http://127.0.0.1:8000/", "The 'Back to Home' button did not redirect to the homepage."
+
+    print(f"Back to Home button worked on {url} page.")
