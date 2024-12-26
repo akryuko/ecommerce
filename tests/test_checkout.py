@@ -6,6 +6,7 @@ from faker import Faker
 import time
 import random
 from selenium.common.exceptions import NoSuchElementException
+from helpers import login_user, logout_user
 
 
 # Test case 26: Verify that the checkout page loads correctly.
@@ -506,6 +507,8 @@ def test_order_success_page_with_logged_in_user(driver):
     # Step 16: Verify the payment method
     payment_method = driver.find_element(By.XPATH, "//h3[text()='Payment Method:']/following-sibling::p").text.strip()
     assert payment_method.title() ==  selected_payment_method_ui.title(), f"Expected payment method '{ selected_payment_method_ui.capitalize()}', but got '{payment_method}'"
+
+    logout_user(driver)
 
 
 # Test case 33: Verify that the "Return to Home" button works and redirects to the homepage.

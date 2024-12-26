@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pytest
 import time
+from helpers import login_user, logout_user
 
 # Test case 38: Verify that the session is maintained during navigation between pages for logged-in users.
 def test_session_persistence(driver):
@@ -54,6 +55,7 @@ def test_sensitive_data_handling_registration(driver):
     # Step 5: Verify the 'Register' button is present
     register_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
     assert register_button.text == "Register", "Register button text is incorrect."
+
 
 # Test case 40:  Verify that users are logged out after a period of inactivity.
 def test_auto_logout_after_inactivity(driver):

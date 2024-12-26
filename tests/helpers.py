@@ -25,3 +25,19 @@ def login_user(driver, username, password):
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "button.logout-button"))
     )
+
+def logout_user(driver):
+    """
+    Logs out the user from the application.
+    :param driver: WebDriver instance.
+    """
+    # Find and click the logout button
+    logout_button = driver.find_element(By.CSS_SELECTOR, "button.logout-button")
+    logout_button.click()
+
+    # Verify that the user is redirected to the login page or the login button is visible
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.LINK_TEXT, "Login"))
+    )
+    login_button = driver.find_element(By.LINK_TEXT, "Login")
+    assert login_button.is_displayed(), "Login button not visible after logout."

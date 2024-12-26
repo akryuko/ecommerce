@@ -8,7 +8,7 @@ from datetime import datetime
 import random
 import string
 import time
-
+from helpers import login_user, logout_user
 
 # Test case 20: Verify that a user can successfully register with valid details.
 def generate_unique_username(base="testuser"):
@@ -59,7 +59,9 @@ def test_user_registration(driver):
     )
     assert logout_button.is_displayed()
 
+    logout_user(driver)
 
+    
 # Test case 21: Verify that a user cannot register with invalid details (e.g., missing fields, invalid format).
 def test_user_registration_invalid_details(driver):
     # Step 1: Open the Home page
@@ -131,6 +133,8 @@ def test_user_login_valid_credentials(driver):
     )
     assert logout_button.is_displayed()
 
+    logout_user(driver)
+
 
 # Test case 23: Verify that a user cannot log in with invalid credentials.
 def test_user_login_invalid_credentials(driver):
@@ -161,7 +165,7 @@ def test_user_login_invalid_credentials(driver):
     assert username_field.text == ""  # Ensure username field is cleared
     assert password_field.text == ""  # Ensure password field is cleared
 
-
+    
 # Test case 24: 
 def test_user_logout(driver):
     # Step 1: Open the Home page
