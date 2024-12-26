@@ -147,5 +147,5 @@ LOGIN_URL = 'login'
 
 
 # The age of session cookies in seconds
-SESSION_COOKIE_AGE = 300  # 5 minutes
+SESSION_COOKIE_AGE = 60  # 5 minutes
 

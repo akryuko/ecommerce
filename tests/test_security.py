@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import pytest
 import time
 from helpers import login_user, logout_user
+from selenium.common.exceptions import NoSuchElementException
 
 # Test case 38: Verify that the session is maintained during navigation between pages for logged-in users.
 def test_session_persistence(driver):
@@ -59,7 +60,24 @@ def test_sensitive_data_handling_registration(driver):
 
 # Test case 40:  Verify that users are logged out after a period of inactivity.
 def test_auto_logout_after_inactivity(driver):
-    # Step 1: Log in with valid credentials
+
+    # Step 1: Ensure the user is logged out
+    driver.get("http://localhost:8000")  # Replace with your actual Home page URL
+    
+    try:
+        # Check if the logout button is present
+        logout_button = driver.find_element(By.CSS_SELECTOR, ".logout-button")
+        logout_button.click()  # Log out the user
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".login-button"))
+        )  # Wait until the Login button appears, confirming logout
+    except NoSuchElementException:
+        # No logout button means the user is already logged out
+        login_button = driver.find_element(By.CSS_SELECTOR, ".login-button")
+        assert login_button.is_displayed(), "Login button not found; unable to confirm logged-out state."
+
+
+    # Step 2: Log in with valid credentials
     login_user(driver, username="test", password="user12345")
 
     logout_button = driver.find_element(By.CSS_SELECTOR, "button.logout-button")
@@ -73,7 +91,7 @@ def test_auto_logout_after_inactivity(driver):
 
 
     # Step 3: Wait for inactivity timeout (e.g., 5 minutes)
-    timeout_duration = 5 * 60  # Adjust to match your application's session timeout setting (in seconds)
+    timeout_duration = 1 * 60  # Adjust to match your application's session timeout setting (in seconds)
     time.sleep(timeout_duration + 10)  # Adding buffer to ensure the session expires
 
     # Step 4: Try accessing a protected page (e.g., profile)
