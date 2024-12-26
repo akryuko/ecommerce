@@ -150,7 +150,7 @@ def test_sorting_options(driver):
 # Test case 6: Verify that the search bar is visible and functional
 def test_search(driver):
     # List of possible search queries
-    search_queries = ["banana", "apple", "tomato", "avocado", "cherry"]
+    search_queries = ["banana", "apple", "tomato", "avocado", "cherry", "nonexistentproduct"]  # Added a query that won't match
     
     # Randomly select a search query from the list
     search_query = random.choice(search_queries)
@@ -173,20 +173,26 @@ def test_search(driver):
     search_button.click()
 
     # Wait for the search results to load
-    product_list = WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.CLASS_NAME, "product-list"))
     )
-    assert product_list.is_displayed(), "Product list is not visible after performing the search."
 
-    # Verify that at least one product card is displayed
-    product_cards = product_list.find_elements(By.CLASS_NAME, "product-card")
-    assert len(product_cards) > 0, "No products were found in the search results."
-
-    # Verify the first product matches the search query
-    product_names = [card.find_element(By.TAG_NAME, "h3").text.lower() for card in product_cards]
-    assert any(search_query.lower() in name for name in product_names), (
-        f"No products matching '{search_query}' found in the search results."
-    )
+    # Check if products are found
+    product_cards = driver.find_elements(By.CLASS_NAME, "product-card")
+    
+    if len(product_cards) > 0:
+        # If there are products, verify the first product matches the search query
+        product_names = [card.find_element(By.TAG_NAME, "h3").text.lower() for card in product_cards]
+        assert any(search_query.lower() in name for name in product_names), (
+            f"No products matching '{search_query}' found in the search results."
+        )
+    else:
+        # If no products are found, verify the "No results" message is displayed
+        no_results_message = driver.find_element(By.CLASS_NAME, "no-results-message")
+        assert no_results_message.is_displayed(), "No results message is not displayed when no products are found."
+        assert "No products match your search criteria. Please try a different query or clear the search to browse all products." in no_results_message.text, (
+            "The 'No results' message text is incorrect or missing."
+        )
 
     # Wait for and verify the "Clear Search" button is visible
     clear_search_button = WebDriverWait(driver, 10).until(

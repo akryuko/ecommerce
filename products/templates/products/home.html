@@ -39,17 +39,23 @@
     </div>
 
     <div class="product-list">
-        {% for product in products %}
-            <div class="product-card">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                <h3>{{ product.name }}</h3>
-                <p>${{ product.price }}</p>
-                <div class="product-buttons">
-                    <a href="#" class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</a>
-                    <a href="{% url 'product_detail' product.id %}" class="view-btn">View</a>
+        {% if products %}
+            {% for product in products %}
+                <div class="product-card">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    <h3>{{ product.name }}</h3>
+                    <p>${{ product.price }}</p>
+                    <div class="product-buttons">
+                        <a href="#" class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</a>
+                        <a href="{% url 'product_detail' product.id %}" class="view-btn">View</a>
+                    </div>
                 </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results-message">
+                <p>No products match your search criteria. Please try a different query or clear the search to browse all products.</p>
             </div>
-        {% endfor %}
+        {% endif %}
     </div>
 
     <!-- Pagination Controls -->
