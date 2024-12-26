@@ -688,10 +688,23 @@ def test_guest_checkout(driver):
 
 # Test case 36: Verify that the user is prompted to create an account or register after completing a guest checkout.
 def test_guest_checkout_prompt_to_create_account_or_login(driver):
-    fake = Faker()
 
+    fake = Faker()
+    
     # Step 1: Navigate to the home page
     driver.get("http://localhost:8000")  # Replace with your actual Home page URL
+
+    try:
+        # Check if the logout button is present
+        logout_button = driver.find_element(By.CSS_SELECTOR, ".logout-button")
+        logout_button.click()  # Log out the user
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".login-button"))
+        )  # Wait until the Login button appears, confirming logout
+    except NoSuchElementException:
+        # No logout button means the user is already logged out
+        login_button = driver.find_element(By.CSS_SELECTOR, ".login-button")
+        assert login_button.is_displayed(), "Login button not found; unable to confirm logged-out state."
 
     # Step 2: Add products to the cart
     products = driver.find_elements(By.CSS_SELECTOR, ".product-card .add-to-cart-btn")

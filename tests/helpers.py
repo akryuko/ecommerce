@@ -27,6 +27,9 @@ def login_user(driver, username, password):
     )
 
 def logout_user(driver):
+
+    driver.get("http://localhost:8000/")  # Replace with your actual Home page URL
+
     """
     Logs out the user from the application.
     :param driver: WebDriver instance.
