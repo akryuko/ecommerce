@@ -377,5 +377,8 @@ footer {
     font-weight: bold; 
 }
 
+.clear-search-container {
+    margin-right: 20px; /* Add some space between the search and the sort section */
+}
 
 
