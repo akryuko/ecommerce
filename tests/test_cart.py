@@ -49,34 +49,51 @@ def test_cart_total_price(driver):
     # Step 1: Navigate to the e-commerce website's homepage
     driver.get("http://127.0.0.1:8000")
 
-    # Step 2: Locate all products on the homepage
+    # Step 2: Click the cart icon to go to the cart page
+    cart_icon = driver.find_element(By.CSS_SELECTOR, "i.bi.bi-cart")  # Cart icon selector
+    cart_icon.click()
+
+    # Step 3: Get the current total price of the cart
+    cart_total_elements = driver.find_elements(By.CSS_SELECTOR, ".col-md-6.offset-md-6.text-right h4")
+
+    # If the total price element is found, extract the value, otherwise assume the cart is empty
+    if cart_total_elements:
+        # Extract the price, remove the "Total Cost: $" part, and convert it to a float
+        initial_cart_total = float(cart_total_elements[0].text.replace("Total Cost: $", ""))
+    else:
+        initial_cart_total = 0.0  # Assume the cart is empty if the total element is not found
+
+    # Step 4: Locate all products on the homepage
+    driver.get("http://127.0.0.1:8000")  # Ensure you're on the homepage again
     products = driver.find_elements(By.CSS_SELECTOR, ".product-card")
     assert len(products) > 0, "No products found on the homepage."
 
-    # Step 3: Add random products to the cart and calculate the expected total price
-    total_expected_price = 0
+    # Step 5: Add random products to the cart and calculate the expected total price
+    total_expected_price = initial_cart_total  # Start with the initial total
+
     for i in range(3):  # Add exactly 3 items for this test
         product = products[i]
         price_element = product.find_element(By.CSS_SELECTOR, "p")
         product_price = float(price_element.text.replace("$", ""))
-        total_expected_price += product_price
+        total_expected_price += product_price  # Add product price to the total
 
         add_to_cart_button = product.find_element(By.CSS_SELECTOR, ".add-to-cart-btn")
         add_to_cart_button.click()
 
-    # Step 4: Navigate to the Cart page
-    cart_link = driver.find_element(By.CSS_SELECTOR, ".header-actions .cart-icon-container")
-    cart_link.click()
+    # Step 6: Navigate to the Cart page again
+    cart_icon = driver.find_element(By.CSS_SELECTOR, "i.bi.bi-cart")
+    cart_icon.click()
 
-    # Step 5: Verify the total price in the cart
+    # Step 7: Verify the final total price in the cart
     cart_total_element = driver.find_element(By.CSS_SELECTOR, ".col-md-6.offset-md-6.text-right h4")
     cart_total_price = float(cart_total_element.text.replace("Total Cost: $", ""))
-    
+
     # Round both totals to 2 decimal places for comparison
     total_expected_price = round(total_expected_price, 2)
     cart_total_price = round(cart_total_price, 2)
-    
+
     assert cart_total_price == total_expected_price, f"Expected total price ${total_expected_price}, but got ${cart_total_price}."
+
 
 # Test case 16: Verify that the cart updates the item quantity correctly when the quantity is changed.
 
