@@ -43,6 +43,8 @@ urlpatterns = [
     path('terms/', terms, name='terms'),
     path('account/creation_prompt/<int:order_id>/', account_creation_prompt, name='account_creation_prompt'),
     path('profile/', user_profile, name='user_profile'),
+    path('order/<int:order_id>/', order_detail, name='order_detail'),
+
 
 
 

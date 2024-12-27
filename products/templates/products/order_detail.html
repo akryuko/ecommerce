@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block title %}Order Details - My Ecommerce Store{% endblock %}
+
+{% block content %}
+<main class="container mt-4">
+    <h2>Order Details</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px;">
+                        {% else %}
+                        No image
+                        {% endif %}
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.quantity|multiply:item.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Checkout Details Section -->
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <h4>Order Summary:</h4>
+            <ul>
+                <li>Full Name: {{ order.first_name }} {{ order.last_name }}</li>
+                <li>Email: {{ order.email }}</li>
+                <li>Phone: {{ order.phone }}</li>
+                <li>Address: {{ order.address }}</li>
+                <li>City: {{ order.city }}</li>
+                <li>State: {{ order.state }}</li>
+                <li>Postal Code: {{ order.postal_code }}</li>
+                <li>Payment Method: {{ order.payment_method }}</li>
+            </ul>
+        </div>
+        <div class="col-md-6 text-right">
+            <h4>Total Amount: ${{ order.total_cost }}</h4>
+        </div>
+    </div>
+
+</main>
+{% endblock %}

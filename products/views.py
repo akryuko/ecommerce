@@ -553,3 +553,9 @@ def user_profile(request):
     user = request.user
     orders = Order.objects.filter(user=user).order_by('-created_at')  # Fetch user's orders
     return render(request, 'products/user_profile.html', {'user': user, 'orders': orders})
+
+@login_required
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order_items = OrderItem.objects.filter(order=order)
+    return render(request, 'products/order_detail.html', {'order': order, 'order_items': order_items})
