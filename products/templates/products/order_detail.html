@@ -23,13 +23,13 @@
                 {% for item in order_items %}
                 <tr>
                     <td>{{ item.product.name }}</td>
-                    <td>
+                    <td style="width: 100px;">
                         {% if item.product.image %}
-                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px;">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 80px; height: 80px; object-fit: cover;">
                         {% else %}
-                        No image
+                            No image
                         {% endif %}
-                    </td>
+                    </td>                    
                     <td>{{ item.quantity }}</td>
                     <td>${{ item.price }}</td>
                     <td>${{ item.quantity|multiply:item.price }}</td>
