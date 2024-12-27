@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.shortcuts import render
 from django.urls import include, path
-from products.views import home, register, view_cart, product_list, add_to_cart, remove_from_cart, product_detail, update_cart, reduce_from_cart, get_cart_count, checkout, faq, about, terms, account_creation_prompt, order_success
+from products.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView, LogoutView
@@ -42,6 +42,7 @@ urlpatterns = [
     path('about/', about, name='about'),
     path('terms/', terms, name='terms'),
     path('account/creation_prompt/<int:order_id>/', account_creation_prompt, name='account_creation_prompt'),
+    path('profile/', user_profile, name='user_profile'),
 
 
 

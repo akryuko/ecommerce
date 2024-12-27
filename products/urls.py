@@ -25,12 +25,9 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('terms/', views.terms, name='terms'),
     path('account/creation_prompt/<int:order_id>/', views.account_creation_prompt, name='account_creation_prompt'),
+    path('profile/', views.user_profile, name='user_profile'),
 
 
 ]
-
-
-
-
 
 

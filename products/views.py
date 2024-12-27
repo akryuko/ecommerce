@@ -9,7 +9,8 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import F
 from django.contrib.auth import login
-
+from .forms import ProfileForm
+from .models import Profile
 
 
 def home(request):
@@ -546,3 +547,9 @@ def terms(request):
     return render(request, 'products/terms.html', context)
 
 
+
+@login_required
+def user_profile(request):
+    user = request.user
+    orders = Order.objects.filter(user=user).order_by('-created_at')  # Fetch user's orders
+    return render(request, 'products/user_profile.html', {'user': user, 'orders': orders})

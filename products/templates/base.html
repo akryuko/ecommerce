@@ -24,12 +24,27 @@
                         <span id="cart-count">{{ cart_count }}</span>
                     </a>
                     {% if user.is_authenticated %}
+                    <!-- Profile Button -->
+                    <a href="{% url 'user_profile' %}" class="btn btn-light d-flex align-items-center" title="Profile" style="background-color: #E6F7FF; color: #2568AE; border: none; padding: 5px 10px; border-radius: 5px;">
+                        <i class="bi bi-person-circle" style="font-size: 1.5rem; margin-right: 5px;"></i>
+                        <span>Profile</span>
+                    </a>
+                    
+                    <style>
+                        .btn-light:hover {
+                            background-color: #D4EEFC;
+                            color: #1D5B8E;
+                        }
+                    </style>                
+                                              
+                    <!-- Logout Button -->
                         <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-link logout-button" style="padding: 0; border: none;">Log out</button>
-                        </form>
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link logout-button" style="padding: 0; border: none;">Log out</button>
+                    </form>
                     {% else %}
-                        <a href="{% url 'login' %}" class="login-button">Login</a>
+                    <!-- Login Button -->
+                    <a href="{% url 'login' %}" class="login-button">Login</a>
                     {% endif %}
                 </div>
             </nav>
