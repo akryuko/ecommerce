@@ -11,7 +11,8 @@ from django.db.models import F
 from django.contrib.auth import login
 from .forms import ProfileForm
 from .models import Profile
-
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib import messages
 
 def home(request):
     # Get the sorting parameter from the request
@@ -559,3 +560,13 @@ def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     order_items = OrderItem.objects.filter(order=order)
     return render(request, 'products/order_detail.html', {'order': order, 'order_items': order_items})
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'products/password_change.html'
+    success_url = '/profile/'  # Redirect to the user profile page after successful change
+
+    def form_valid(self, form):
+        # Add success message after password change
+        messages.success(self.request, "Your password has been changed successfully.")
+        return super().form_valid(form)
+

@@ -2,12 +2,18 @@
 {% block content %}
 
 <div class="container mt-5">
-
     <a href="{% url 'home' %}" class="btn btn-primary mt-4">Back to Home</a>
 
     <h1 class="text-center">Welcome, {{ user.username }}!</h1>
 
-    <h2 class="text-center">Order History</h2>
+    
+    <div class="d-flex align-items-center mt-4">
+        <p class="text-dark" style="font-size: 1.1rem; margin-bottom: 0; margin-right: 15px;">You can change your password here if you feel it's necessary.</p>
+        
+        <a href="{% url 'password_change' %}" class="btn btn-warning">Change Password</a>
+    </div>
+
+    <h2 class="text-center mt-4">Order History</h2>
     {% if orders %}
         <table class="table table-bordered table-striped mt-3">
             <thead class="thead-dark">
@@ -34,7 +40,6 @@
     {% else %}
         <p class="alert alert-info">You have no orders yet.</p>
     {% endif %}
-
 </div>
 
 {% endblock %}

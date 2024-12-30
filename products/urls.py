@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.urls import path
 from . import views
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.urls import path
 from .views import checkout, home
+from .views import CustomPasswordChangeView
 
 urlpatterns = [
     path('', views.home, name='home'),  # Home page URL
@@ -27,8 +28,8 @@ urlpatterns = [
     path('account/creation_prompt/<int:order_id>/', views.account_creation_prompt, name='account_creation_prompt'),
     path('profile/', views.user_profile, name='user_profile'),
     path('order/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('password_change/', CustomPasswordChangeView.as_view(), name='password_change'),
 
 
 ]
-
 

@@ -20,7 +20,7 @@ from django.urls import include, path
 from products.views import *
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -44,8 +44,12 @@ urlpatterns = [
     path('account/creation_prompt/<int:order_id>/', account_creation_prompt, name='account_creation_prompt'),
     path('profile/', user_profile, name='user_profile'),
     path('order/<int:order_id>/', order_detail, name='order_detail'),
+    path('password_change/', CustomPasswordChangeView.as_view(), name='password_change')
+
 
 
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
