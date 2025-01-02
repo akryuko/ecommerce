@@ -68,3 +68,6 @@
 47. Verify that social media links in the footer work correctly. ✅
 48. Verify that the website displays a "404 Page Not Found" message for non-existent URLs. ✅
 49. Verify that the "Back to Home" button works on all pages. ✅
+
+## Profile page Tests (test_profile.py)
+50. Verify profile page functionality. ✅
