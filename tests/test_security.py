@@ -114,5 +114,44 @@ def test_auto_logout_after_inactivity(driver):
     )
     empty_cart_message = driver.find_element(By.CSS_SELECTOR, "p.h4").text
     assert empty_cart_message == "Your cart is empty.", "The cart is not empty after session timeout."
+
+
+# Test case 41: Verify that the "Forgot Password" functionality works correctly.
+def test_change_password(driver):
+    # Step 1: Log in with valid credentials
+    login_user(driver, username="test", password="newyear13579")
+
+    # Step 2: Navigate to the Profile page
+    driver.get("http://localhost:8000/profile/")  # Update with your Profile page URL
+    
+    # Verify the Profile page
+    welcome_message = driver.find_element(By.TAG_NAME, "h1").text
+    assert "Welcome," in welcome_message, "Profile page not loaded or incorrect welcome message."
+
+    # Step 3: Click on "Change Password" button
+    change_password_button = driver.find_element(By.LINK_TEXT, "Change Password")
+    change_password_button.click()
+
+    # Step 4: Fill out the password change form
+    old_password_input = driver.find_element(By.NAME, "old_password")
+    new_password_input = driver.find_element(By.NAME, "new_password1")
+    confirm_password_input = driver.find_element(By.NAME, "new_password2")
+    
+    # Enter old password and new password
+    old_password_input.send_keys("newyear13579")  # Current password
+    new_password_input.send_keys("afkre9323567")  # New password
+    confirm_password_input.send_keys("afkre9323567")  # Confirm new password
+
+    # Submit the form
+    submit_button = driver.find_element(By.XPATH, "//button[text()='Update Password']")
+    submit_button.click()
+
+    # Step 5: Verify successful password change and re-login
+    # Wait for confirmation or redirect to profile page
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-success")))
+
+    # Log out after the test (optional)
+    logout_user(driver)
+
     
  
